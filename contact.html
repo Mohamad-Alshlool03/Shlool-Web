@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>اطلب موقعك — Shlool Web</title>
+  <meta name="description" content="اطلب موقعك الآن: اختر نوع الموقع، الميزات، المدة وعدد الصفحات التقريبي. نرجّع لك عرض خلال وقت قصير.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#1f1f1f; --card:#262626; --surface:#202020;
+      --blue:#0a84ff; --blue-2:#40b3ff;
+      --whatsapp:#25D366; --whatsapp-2:#128C7E;
+      --text:#e9ecf1; --muted:#b7c0cc;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:16px; --max:1100px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:
+        radial-gradient(1200px 800px at 80% -100px, rgba(64,179,255,.12), transparent 60%),
+        linear-gradient(180deg, #1b1b1b, var(--bg));
+      color:var(--text); line-height:1.7;
+    }
+    a{color:var(--blue); text-decoration:none}
+    .wrap{max-width:var(--max); margin:auto; padding:28px 20px}
+
+    header{
+      position:sticky; top:0; backdrop-filter:saturate(1.2) blur(8px);
+      background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.0));
+      border-bottom:1px solid rgba(255,255,255,.08);
+      z-index:40; box-shadow:0 6px 20px rgba(0,0,0,.25);
+    }
+    .nav{max-width:var(--max); margin:auto; padding:14px 20px; display:flex; align-items:center; gap:14px}
+    .logo{display:flex; align-items:center; gap:10px; color:var(--text); font-weight:800}
+    .logo-img{height:52px; width:auto; border-radius:10px; box-shadow:var(--shadow); display:block}
+    .nav-gap{flex:1}
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px;
+      background:linear-gradient(135deg,var(--blue),var(--blue-2)); color:#fff; font-weight:700;
+      box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .2s ease;
+      border:0; cursor:pointer; text-align:center
+    }
+    .btn:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(10,132,255,.25)}
+    .btn-outline{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.16)}
+    .btn-whatsapp{background:linear-gradient(135deg,var(--whatsapp),var(--whatsapp-2)); color:#fff}
+    .btn-whatsapp:hover{box-shadow:0 16px 40px rgba(18,140,126,.28)}
+
+    .hero{display:grid; grid-template-columns:1.05fr .95fr; gap:24px; align-items:center; padding-block:28px}
+    .title{font-size:clamp(28px, 4vw, 44px); line-height:1.2; margin:0 0 10px; font-weight:800}
+    .subtitle{color:var(--muted); font-size:clamp(16px,2.2vw,18px); margin:0 0 14px}
+    .badge{
+      display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
+      background:rgba(10,132,255,.12); color:var(--blue); font-weight:700; margin-bottom:12px;
+      border:1px solid rgba(64,179,255,.25)
+    }
+    .panel{
+      background:var(--card); border:1px solid rgba(255,255,255,.06);
+      border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)
+    }
+    .grid-2{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+    .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr}
+      .grid-2,.grid-3{grid-template-columns:1fr}
+    }
+    label{font-weight:700; margin-bottom:6px; display:block}
+    input, select, textarea{
+      width:100%; padding:12px 12px; border-radius:12px; background:#1f1f1f;
+      border:1px solid rgba(255,255,255,.08); color:var(--text); font:inherit;
+      outline:none; transition:border-color .15s ease, box-shadow .15s ease;
+    }
+    input:focus, select:focus, textarea:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(10,132,255,.15)}
+    .hint{color:var(--muted); font-size:13px; margin-top:6px}
+    .choices{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+    .choices label{font-weight:600; display:flex; gap:8px; align-items:flex-start}
+    .choices input[type="checkbox"]{width:18px; height:18px; margin-top:2px}
+    .actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-start; margin-top:14px}
+
+    footer{
+      background:var(--surface);
+      border-top:1px solid rgba(255,255,255,.08);
+      box-shadow:0 -6px 20px rgba(0,0,0,.25);
+      margin-top:40px;
+    }
+    .footer-inner{max-width:var(--max); margin:auto; padding:22px 20px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    .brand{opacity:.7}
+    .dev{font-weight:800}
+
+    .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
+    .reveal.show{opacity:1; transform:none}
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <div class="logo">
+        <img class="logo-img" src="cover.jpg" alt="Shlool Web">
+        <span>Shlool <span style="color:var(--blue)">Web</span></span>
+      </div>
+      <div class="nav-gap"></div>
+      <a class="btn-outline btn" href="index.html" aria-label="العودة للرئيسية">العودة للرئيسية</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <div class="badge">طلب موقع جديد ✨</div>
+        <h1 class="title">خلّينا نبني لك موقع <span style="color:var(--blue)">يناسب بزنسك</span></h1>
+        <p class="subtitle">عبّي الطلب أدناه — نراجع التفاصيل ونرجع لك بعرض سعر وخطة عمل خلال وقت قصير.</p>
+        <div class="actions">
+          <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener">تواصل واتساب</a>
+          <a class="btn" href="mailto:mshlool684@gmail.com">راسلني عبر الإيميل</a>
+        </div>
+      </div>
+      <div class="panel reveal">
+        <h3 style="margin:0 0 10px">ليش معنا؟</h3>
+        <ul style="margin:0; padding-inline-start:18px; color:var(--muted)">
+          <li>تسليم خلال أقل من أسبوع للمواقع الصغيرة.</li>
+          <li>تصميم متوافق مع الجوال وسريع الأداء.</li>
+          <li>نماذج تواصل تصل للإيميل + زر واتساب مباشر.</li>
+          <li>إعداد دومين واستضافة (اختياري).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- نموذج طلب موقع -->
+    <section class="panel reveal" aria-label="طلب موقع">
+      <h2 style="margin-top:0">نموذج طلب موقع</h2>
+      <p class="hint">الحقول المعلَّمة بـ (*) مطلوبة. الإرسال يتم عبر واتساب أو بريد — بدون أي باك-إند.</p>
+
+      <form id="siteForm" novalidate>
+        <!-- معلومات أساسية -->
+        <div class="grid-3">
+          <div>
+            <label for="fullName">الاسم الكامل *</label>
+            <input id="fullName" required placeholder="مثال: محمد الشلول">
+          </div>
+          <div>
+            <label for="phone">الهاتف / واتساب *</label>
+            <input id="phone" required placeholder="مثال: 0790 986 908">
+          </div>
+          <div>
+            <label for="email">البريد الإلكتروني *</label>
+            <input id="email" type="email" required placeholder="example@email.com">
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top:12px">
+          <div>
+            <label for="business">اسم النشاط (اختياري)</label>
+            <input id="business" placeholder="مثال: Falafel House">
+          </div>
+          <div>
+            <label for="industry">القطاع</label>
+            <select id="industry">
+              <option value="">اختر…</option>
+              <option>مطاعم وكافيهات</option>
+              <option>عيادات ومراكز طبية</option>
+              <option>شركات وبزنس</option>
+              <option>متاجر إلكترونية</option>
+              <option>شخصي/بورتفوليو</option>
+              <option>تعليمي/تدريب</option>
+              <option>غير ذلك</option>
+            </select>
+          </div>
+          <div>
+            <label for="currentSite">موقع حالي (إن وجد)</label>
+            <input id="currentSite" type="url" placeholder="https://example.com">
+          </div>
+        </div>
+
+        <!-- نوع الموقع المطلوب -->
+        <div style="margin-top:16px">
+          <label for="siteType">نوع الموقع الذي تريده *</label>
+          <select id="siteType" required>
+            <option value="">اختر نوع الموقع…</option>
+            <option>موقع مطعم (منيو + QR)</option>
+            <option>موقع عيادة (حجز مواعيد)</option>
+            <option>موقع شركة/تعريفي</option>
+            <option>متجر إلكتروني</option>
+            <option>بورتفوليو شخصي</option>
+            <option>صفحة هبوط</option>
+            <option>آخر</option>
+          </select>
+          <p class="hint">سنضبط التصميم والمحتوى حسب النوع المختار.</p>
+        </div>
+
+        <!-- ميزات مطلوبة -->
+        <div style="margin-top:10px">
+          <label>الميزات المطلوبة (اختَر ما يلزم)</label>
+          <div class="choices">
+            <label><input type="checkbox" value="منيو أونلاين وQR"> منيو أونلاين وQR</label>
+            <label><input type="checkbox" value="طلبات أونلاين بسيطة"> طلبات أونلاين بسيطة</label>
+            <label><input type="checkbox" value="حجز مواعيد إلى الإيميل"> حجز مواعيد إلى الإيميل</label>
+            <label><input type="checkbox" value="نموذج تواصل إلى الإيميل"> نموذج تواصل إلى الإيميل</label>
+            <label><input type="checkbox" value="زر واتساب مباشر"> زر واتساب مباشر</label>
+            <label><input type="checkbox" value="خرائط جوجل وموقع الفرع"> خرائط جوجل وموقع الفرع</label>
+            <label><input type="checkbox" value="تعدد اللغات"> تعدد اللغات</label>
+            <label><input type="checkbox" value="مدونة/مقالات"> مدونة/مقالات</label>
+            <label><input type="checkbox" value="معرض صور/أعمال"> معرض صور/أعمال</label>
+            <label><input type="checkbox" value="دفع أونلاين"> دفع أونلاين</label>
+            <label><input type="checkbox" value="تأمين دومين واستضافة"> تأمين دومين واستضافة</label>
+            <label><input type="checkbox" value="تحسين سرعة وSEO أساسي"> تحسين سرعة وSEO أساسي</label>
+          </div>
+        </div>
+
+        <!-- المدة + عدد الصفحات + تفضيل التواصل -->
+        <div class="grid-3" style="margin-top:16px">
+          <div>
+            <label for="timeline">الإطار الزمني المرغوب *</label>
+            <select id="timeline" required>
+              <option value="">اختر…</option>
+              <option>أقل من أسبوع</option>
+              <option>1–2 أسبوع</option>
+              <option>3–4 أسابيع</option>
+              <option>غير مستعجل</option>
+            </select>
+          </div>
+          <div>
+            <label for="pages">عدد الصفحات التقريبي</label>
+            <select id="pages">
+              <option value="">اختر…</option>
+              <option>1–3 صفحات</option>
+              <option>4–6 صفحات</option>
+              <option>7–10 صفحات</option>
+              <option>أكثر من 10 صفحات</option>
+              <option>غير محدد بعد</option>
+            </select>
+            <p class="hint">يفيدنا بتقدير نطاق العمل والمدة.</p>
+          </div>
+          <div>
+            <label for="contactPref">طريقة التواصل المفضلة</label>
+            <select id="contactPref">
+              <option value="">اختر…</option>
+              <option>واتساب</option>
+              <option>اتصال هاتفي</option>
+              <option>بريد إلكتروني</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ملاحظات إضافية -->
+        <div style="margin-top:16px">
+          <label for="notes">ملاحظات إضافية</label>
+          <textarea id="notes" rows="6" placeholder="اكتب أي تفاصيل إضافية ترغب بها: صفحات مطلوبة، مواقع تعجبك كمثال، ألوان، لغة ثانية، وغيرها…"></textarea>
+        </div>
+
+        <!-- إرسال -->
+        <div class="actions">
+          <button type="submit" class="btn btn-whatsapp"><span>إرسال عبر واتساب</span></button>
+          <button type="button" id="sendEmail" class="btn btn-outline">إرسال عبر الإيميل</button>
+          <a class="btn btn-outline" href="index.html">رجوع للرئيسية</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="brand">© Shlool Web — جميع الحقوق محفوظة</div>
+      <div style="display:flex; gap:10px; align-items:center">
+        <div class="dev">تم التطوير من قبل محمد الشلول</div>
+        <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener">واتساب: 0790986908</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ظهور ناعم عند التمرير
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target);} });
+    },{threshold:.08});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    function buildSummary() {
+      const get = id => document.getElementById(id);
+      const name = get('fullName').value.trim();
+      const phone = get('phone').value.trim();
+      const email = get('email').value.trim();
+      const business = get('business').value.trim();
+      const industry = get('industry').value;
+      const currentSite = get('currentSite').value.trim();
+      const siteType = get('siteType').value;
+      const timeline = get('timeline').value;
+      const pages = get('pages').value;
+      const contactPref = get('contactPref').value;
+      const notes = get('notes').value.trim();
+      const features = Array.from(document.querySelectorAll('.choices input:checked')).map(c=>c.value);
+
+      const lines = [
+        'طلب موقع جديد:',
+        `الاسم: ${name}`,
+        `الهاتف/واتساب: ${phone}`,
+        `البريد: ${email}`,
+        business ? `النشاط: ${business}` : null,
+        industry ? `القطاع: ${industry}` : null,
+        currentSite ? `موقع حالي: ${currentSite}` : null,
+        `نوع الموقع: ${siteType || '-'}`,
+        features.length ? `ميزات مطلوبة: ${features.join('، ')}` : null,
+        `المدة المرغوبة: ${timeline || '-'}`,
+        pages ? `عدد الصفحات التقريبي: ${pages}` : null,
+        contactPref ? `طريقة التواصل: ${contactPref}` : null,
+        notes ? '\nملاحظات إضافية:\n' + notes : null
+      ].filter(Boolean);
+
+      return lines.join('\n');
+    }
+
+    function validateRequired() {
+      const req = ['fullName','phone','email','siteType','timeline'];
+      let ok = true;
+      req.forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el.value.trim()){
+          ok = false;
+          el.style.borderColor = '#ff6b6b';
+          el.addEventListener('input', ()=> el.style.borderColor='rgba(255,255,255,.08)', {once:true});
+        }
+      });
+      return ok;
+    }
+
+    document.getElementById('siteForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      if(!validateRequired()) return;
+      const text = encodeURIComponent(buildSummary());
+      const url = `https://wa.me/962790986908?text=${text}`;
+      window.open(url, '_blank');
+    });
+
+    document.getElementById('sendEmail').addEventListener('click', function(){
+      if(!validateRequired()) return;
+      const body = encodeURIComponent(buildSummary());
+      const subject = encodeURIComponent('طلب موقع جديد — Shlool Web');
+      window.location.href = `mailto:mshlool684@gmail.com?subject=${subject}&body=${body}`;
+    });
+  </script>
+</body>
+</html>

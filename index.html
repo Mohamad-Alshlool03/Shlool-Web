@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Shlool Web — موقعك أونلاين خلال أسبوع</title>
+  <meta name="description" content="تصميم وتطوير مواقع احترافية للمطاعم والعيادات والشركات. موقعك أونلاين خلال أسبوع.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#1f1f1f;        /* خلفية عامة */
+      --card:#262626;      /* بطاقات */
+      --surface:#202020;   /* هيدر/فوتر */
+      --blue:#0a84ff;      /* أزرق أساسي */
+      --blue-2:#40b3ff;    /* أزرق فاتح */
+      --whatsapp:#25D366;  /* واتساب */
+      --whatsapp-2:#128C7E;
+      --text:#e9ecf1;
+      --muted:#b7c0cc;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+      --max:1100px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:
+        radial-gradient(1200px 800px at 80% -100px, rgba(64,179,255,.12), transparent 60%),
+        linear-gradient(180deg, #1b1b1b, var(--bg));
+      color:var(--text); line-height:1.7;
+    }
+    a{color:var(--blue); text-decoration:none}
+
+    /* هيدر مميز */
+    header{
+      position:sticky; top:0; backdrop-filter:saturate(1.2) blur(8px);
+      background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.0));
+      border-bottom:1px solid rgba(255,255,255,.08);
+      z-index:40; box-shadow:0 6px 20px rgba(0,0,0,.25);
+    }
+    .nav{max-width:var(--max); margin:auto; padding:14px 20px; display:flex; align-items:center; gap:16px}
+    .logo{display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.3px; color:var(--text)}
+    .logo-img{
+      height:52px; width:auto; border-radius:10px; box-shadow:var(--shadow); display:block;
+    }
+    .nav a.btn{margin-inline-start:auto}
+
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px;
+      background:linear-gradient(135deg,var(--blue),var(--blue-2)); color:#fff; font-weight:700;
+      box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .2s ease;
+    }
+    .btn:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(10,132,255,.25)}
+
+    /* زر واتساب */
+    .btn-whatsapp{
+      background:linear-gradient(135deg,var(--whatsapp),var(--whatsapp-2));
+      color:#fff;
+    }
+    .btn-whatsapp:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px rgba(18,140,126,.28);
+    }
+    .btn-whatsapp .icon{width:18px;height:18px;display:inline-block;vertical-align:middle}
+
+    .wrap{max-width:var(--max); margin:auto; padding:28px 20px}
+    .hero{display:grid; grid-template-columns:1.1fr .9fr; gap:28px; align-items:center; padding-block:32px}
+    .title{font-size:clamp(30px, 4vw, 46px); line-height:1.2; margin:0 0 10px; font-weight:800}
+    .subtitle{color:var(--muted); font-size:clamp(16px,2.3vw,18px); margin:0 0 20px}
+    .badge{
+      display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
+      background:rgba(10,132,255,.12); color:var(--blue); font-weight:700; margin-bottom:14px;
+      border:1px solid rgba(64,179,255,.25)
+    }
+
+    .panel{background:var(--card); border:1px solid rgba(255,255,255,.06);
+      border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
+    .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+    .service{padding:18px; border-radius:14px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06)}
+    .service h3{margin:0 0 6px; font-size:18px}
+    .service p{margin:0; color:var(--muted); font-size:14px}
+    .tagline{font-weight:800; color:var(--blue); font-size:22px; margin-top:10px}
+
+    .cta{display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; margin-top:26px}
+    .small{color:var(--muted); font-size:13px}
+
+    /* فوتر مميز */
+    footer{
+      background:var(--surface);
+      border-top:1px solid rgba(255,255,255,.08);
+      box-shadow:0 -6px 20px rgba(0,0,0,.25);
+      margin-top:40px;
+    }
+    .brand{opacity:.7}
+    .dev{font-weight:800; letter-spacing:.2px}
+
+    /* أنيميشن ظهور */
+    .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
+    .reveal.show{opacity:1; transform:none}
+
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr; gap:18px}
+      .grid{grid-template-columns:1fr}
+      .nav a.btn{margin-inline-start:0}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <div class="logo">
+        <!-- صورة الغلاف بدل حرف S -->
+        <img class="logo-img" src="cover.jpg" alt="Shlool Web cover">
+        <span>Shlool <span style="color:var(--blue)">Web</span></span>
+      </div>
+      <!-- زر الحجز يفتح صفحة الاتصال المحلية -->
+      <a class="btn" href="./contact.html">احجز موقعك الآن ⚡</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <div class="badge">موقعك أونلاين خلال أقل من أسبوع ✨</div>
+        <h1 class="title">نصمم ونطوّر مواقع <span style="color:var(--blue)">احترافية</span> تبيع وتكبر بزنسك</h1>
+        <p class="subtitle">مطاعم، عيادات، شركات ومتاجر إلكترونية — ربط QR، منيو أونلاين، نماذج تواصل تصل للإيميل مباشرة.</p>
+        <!-- (تم حذف السطر الصغير كما طلبت) -->
+      </div>
+
+      <div class="panel reveal">
+        <h2 class="tagline">الخدمات</h2>
+        <div class="grid">
+          <div class="service reveal">
+            <h3>مواقع مطاعم 🍔</h3>
+            <p>منيو أونلاين، طلب سريع، ربط QR على الطاولات.</p>
+          </div>
+          <div class="service reveal">
+            <h3>مواقع عيادات 🏥</h3>
+            <p>حجز مواعيد يصل إلى الإيميل مع خرائط الوصول.</p>
+          </div>
+          <div class="service reveal">
+            <h3>مواقع شركات وبزنس 🏢</h3>
+            <p>تعريف بالخدمات، نماذج تواصل، وبروفايل احترافي.</p>
+          </div>
+        </div>
+        <p class="tagline">وأي نوع موقع آخر بتحتاجه ✨</p>
+      </div>
+    </section>
+
+    <section class="panel reveal" aria-label="أعمال مختارة">
+      <h2 style="margin-top:0">أمثلة من الشغل</h2>
+      <div class="grid">
+        <a class="service" href="https://mohamad-alshlool03.github.io/mohamadalshlool.github.io/" target="_blank" rel="noopener">
+          <h3>بورتفوليو شخصي</h3>
+          <p>تعريف احترافي ونماذج أعمال.</p>
+        </a>
+        <a class="service" href="https://mohamad-alshlool03.github.io/scc/" target="_blank" rel="noopener">
+          <h3>مركز علاج طبيعي</h3>
+          <p>حجز مواعيد وإشعارات عبر الإيميل.</p>
+        </a>
+        <!-- تم استبدال مطعم الشاورما بمطعم الفلافل -->
+        <a class="service" href="https://mohamad-alshlool03.github.io/Falafel_resturant/" target="_blank" rel="noopener">
+          <h3>مطعم فلافل</h3>
+          <p>منيو أونلاين وتواصل مباشر.</p>
+        </a>
+      </div>
+
+      <!-- أزرار بجانب بعض: الإيميل + واتساب + ابدأ الآن -->
+      <div class="cta">
+        <span class="small">🔐 نلتزم بالصور والخطوط المرخصة — قد نستخدم بدائل مجانية عالية الجودة.</span>
+        <div style="display:flex; gap:10px; align-items:center; margin-inline-start:auto">
+          <a class="btn" href="mailto:you@example.com">راسلني عبر الإيميل</a>
+          <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener" aria-label="تواصل واتساب">
+            تواصل واتساب
+            <svg class="icon" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M19.1 17.4c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a8.4 8.4 0 0 1-4-3.5c-.3-.4.3-.4.8-1.2s.1-.7 0-1c0-.1-.6-1.5-.8-2s-.4-.4-.6-.4h-.5c-.2 0-.6.1-.9.4s-1.1 1-1.1 2.5 1.1 2.9 1.2 3.1 2.2 3.3 5.2 4.6c2.6 1.1 3.1 1 3.7.9s1.8-.7 2-1.4.2-1.2.1-1.4-.2-.2-.4-.3zM16 4a12 12 0 0 0-10.4 18L4 28l6.1-1.6A12 12 0 1 0 16 4zm0 21.3a9.3 9.3 0 0 1-4.8-1.3l-.3-.2-3.6 1 1-3.5-.2-.3A9.3 9.3 0 1 1 16 25.3z"/></svg>
+          </a>
+          <a class="btn" href="./contact.html">ابدأ الآن</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <div class="cta">
+      <div class="brand">© Shlool Web — جميع الحقوق محفوظة</div>
+      <!-- تم التطوير + زر واتساب -->
+      <div style="display:flex; gap:10px; align-items:center; margin-inline-start:auto">
+        <div class="dev">تم التطوير من قبل محمد الشلول</div>
+        <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener" aria-label="تواصل واتساب مع محمد الشلول">
+          واتساب: 0790986908
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ظهور العناصر أثناء التمرير
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); }
+      });
+    },{threshold:.08});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  </script>
+</body>
+</html>
