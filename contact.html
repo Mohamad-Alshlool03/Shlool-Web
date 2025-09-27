@@ -77,9 +77,20 @@
     }
     input:focus, select:focus, textarea:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(10,132,255,.15)}
     .hint{color:var(--muted); font-size:13px; margin-top:6px}
-    .choices{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
-    .choices label{font-weight:600; display:flex; gap:8px; align-items:flex-start}
-    .choices input[type="checkbox"]{width:18px; height:18px; margin-top:2px}
+
+    /* ===== check list (مصمم/متناسق) ===== */
+    .choices{
+      display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px;
+    }
+    .choices label{
+      font-weight:600; display:flex; align-items:center; gap:10px; line-height:1.6;
+      padding:10px 12px; border:1px solid rgba(255,255,255,.12); border-radius:10px;
+      background:rgba(255,255,255,.02);
+    }
+    .choices input[type="checkbox"]{
+      width:18px; height:18px; accent-color:var(--blue);
+    }
+
     .actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-start; margin-top:14px}
 
     /* Estimator card */
@@ -102,6 +113,10 @@
 
     .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
     .reveal.show{opacity:1; transform:none}
+
+    /* موافقة الخصوصية — محاذاة متناسقة */
+    .agree{display:inline-flex; align-items:center; gap:10px}
+    .agree input[type="checkbox"]{width:18px; height:18px; accent-color:var(--blue)}
   </style>
 </head>
 <body>
@@ -288,32 +303,6 @@
           </div>
         </div>
 
-        <!-- المدة + الصفحات -->
-        <div class="grid-2" style="margin-top:12px">
-          <div>
-            <label for="timeline">الإطار الزمني المرغوب *</label>
-            <select id="timeline" required>
-              <option value="">اختر…</option>
-              <option>أقل من أسبوع</option>
-              <option>1–2 أسبوع</option>
-              <option>3–4 أسابيع</option>
-              <option>غير مستعجل</option>
-            </select>
-          </div>
-          <div>
-            <label for="pages">عدد الصفحات التقريبي</label>
-            <select id="pages">
-              <option value="">اختر…</option>
-              <option>1–3 صفحات</option>
-              <option>4–6 صفحات</option>
-              <option>7–10 صفحات</option>
-              <option>أكثر من 10 صفحات</option>
-              <option>غير محدد بعد</option>
-            </select>
-            <p class="hint">يفيدنا بتقدير نطاق العمل والمدة.</p>
-          </div>
-        </div>
-
         <!-- ملاحظات -->
         <div style="margin-top:16px">
           <label for="notes">ملاحظات إضافية</label>
@@ -322,7 +311,7 @@
 
         <!-- سياسة خصوصية -->
         <div class="actions" style="margin-top:6px">
-          <label style="display:flex;gap:8px;align-items:center">
+          <label class="agree">
             <input id="agree" type="checkbox" required>
             <span>أوافق على سياسة الخصوصية واستخدام بيانات التواصل للرد على الطلب.</span>
           </label>
@@ -407,8 +396,6 @@
       const currentSite = $('currentSite').value.trim();
       const siteType = $('siteType').value;
       const features = getSelectedFeatures();
-      const timeline = $('timeline').value;
-      const pages = $('pages').value;
       const contactPref = $('contactPref').value;
       const notes = $('notes').value.trim();
 
@@ -435,8 +422,6 @@
         assetsLink ? `رابط الملفات: ${assetsLink}` : null,
         refs.length ? `مواقع تعجب العميل: ${refs.join(' , ')}` : null,
         contactTime ? `وقت التواصل المفضّل: ${contactTime}` : null,
-        `المدة المرغوبة: ${timeline || '-'}`,
-        pages ? `عدد الصفحات التقريبي: ${pages}` : null,
         contactPref ? `طريقة التواصل: ${contactPref}` : null,
         `الباقة المقترحة: ${rec.plan} — سعر مبدئي: ${rec.price}`,
         notes ? '\nملاحظات إضافية:\n' + notes : null,
@@ -447,11 +432,12 @@
     }
 
     function validateRequired() {
-      const req = ['fullName','phone','email','siteType','timeline','agree'];
+      // تمت إزالة timeline و pages من الحقول المطلوبة
+      const req = ['fullName','phone','email','siteType','agree'];
       let ok = true;
       req.forEach(id=>{
         const el = document.getElementById(id);
-        if((el.type === 'checkbox' && !el.checked) || (!el.type || el.type !== 'checkbox') && !el.value.trim()){
+        if((el.type === 'checkbox' && !el.checked) || (el.type !== 'checkbox' && !el.value.trim())){
           ok = false;
           el.style.borderColor = '#ff6b6b';
           el.addEventListener('input', ()=> el.style.borderColor='rgba(255,255,255,.08)', {once:true});
