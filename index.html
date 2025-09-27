@@ -18,6 +18,7 @@
       --radius:16px; --max:1100px;
     }
     *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{
       margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
       background:
@@ -67,7 +68,7 @@
 
     .section-actions{display:flex; gap:12px; align-items:center; justify-content:flex-start; margin-top:18px}
 
-    /* Contact box */
+    /* Social box */
     .contact-box{
       display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
       background:var(--card); border:1px solid rgba(255,255,255,.06);
@@ -75,11 +76,10 @@
     }
     .contact-box .text{color:var(--muted); font-size:14px}
 
-    /* ===== Pricing (fixed) ===== */
+    /* Pricing */
     .pricing{ margin-top:24px }
     .pricing .section-title{ margin:0 0 12px; font-weight:800 }
     .pricing .section-subtitle{ color:var(--muted); margin:0 0 16px; font-size:14px }
-
     .pricing-cards{
       display:flex; gap:16px; justify-content:center; flex-wrap:wrap;
       align-items:stretch;
@@ -104,9 +104,8 @@
     .features li::before{ content:"✔"; position:absolute; inset-inline-start:0; color:#21d07a; font-weight:900 }
     .btn-primary{ display:inline-flex; justify-content:center; width:100%; padding:10px 14px; border-radius:10px; background:#27b0ff; color:#fff; font-weight:800; text-decoration:none; margin-top:auto }
     .featured{ border:2px solid #27b0ff; box-shadow:0 12px 36px rgba(39,176,255,.22); transform:translateY(-4px) }
-    /* تم حذف أي شارات/خلفيات للبطاقة الوسطى */
 
-    /* ===== FAQ ===== */
+    /* FAQ */
     .faq{ margin-top:24px }
     .faq .section-title{ margin:0 0 12px; font-weight:800; color:var(--text) }
     .faq .section-subtitle{ color:var(--muted); margin:0 0 16px; font-size:14px }
@@ -134,11 +133,15 @@
     .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
     .reveal.show{opacity:1; transform:none}
 
+    /* لا تغطّي العناوين عند القفز */
+    #work, #pricing, #faq, #social { scroll-margin-top: 90px; }
+
     @media (max-width:900px){
       .hero{grid-template-columns:1fr; gap:18px}
       .grid{grid-template-columns:1fr}
       .nav a.btn{margin-inline-start:0}
     }
+    .ltr{direction:ltr; unicode-bidi:plaintext}
   </style>
 </head>
 <body>
@@ -150,8 +153,10 @@
       </div>
 
       <div class="nav-links">
+        <a href="#work">أمثلة</a>
         <a href="#pricing">الباقات</a>
-        <a href="#faq">الأسئلة الشائعة</a>
+        <a href="#faq">الأسئلة</a>
+        <a href="#social">السوشيال</a>
       </div>
 
       <a class="btn" href="./contact.html">احجز موقعك الآن ⚡</a>
@@ -187,7 +192,7 @@
     </section>
 
     <!-- Work examples -->
-    <section class="panel reveal" aria-label="أمثلة من الشغل">
+    <section id="work" class="panel reveal" aria-label="أمثلة من الشغل">
       <h2 style="margin-top:0">أمثلة من الشغل</h2>
       <div class="grid">
         <a class="service" href="https://mohamad-alshlool03.github.io/mohamadalshlool.github.io/" target="_blank" rel="noopener">
@@ -202,6 +207,10 @@
           <h3>مطعم فلافل</h3>
           <p>منيو أونلاين وتواصل مباشر.</p>
         </a>
+        <a class="service" href="https://mohamad-alshlool03.github.io/R-E.C-Safety/" target="_blank" rel="noopener">
+          <h3>شركة استشارات هندسية (R E.C Safety)</h3>
+          <p>استشارات سلامة وصحة مهنية، أهداف واضحة وخدمات احترافية مع نماذج تواصل/حجز.</p>
+        </a>
       </div>
 
       <div class="section-actions">
@@ -209,17 +218,7 @@
       </div>
     </section>
 
-    <!-- Contact box -->
-    <section class="contact-box reveal" aria-label="قنوات التواصل">
-      <div class="text">للاستفسار والطلبات السريعة:</div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap">
-        <a class="btn" href="mailto:mshlool684@gmail.com">راسلني عبر الإيميل</a>
-        <a class="btn btn-ig" href="https://instagram.com/shlool_web" target="_blank" rel="noopener">زيارة إنستجرام</a>
-        <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener">تواصل واتساب</a>
-      </div>
-    </section>
-
-    <!-- Pricing (before FAQ) -->
+    <!-- Pricing -->
     <section class="panel reveal pricing" id="pricing" aria-label="باقات التصميم والتطوير">
       <h2 class="section-title">باقات التصميم والتطوير</h2>
       <p class="section-subtitle">التسعير حسب <strong>الميزات</strong> — مش على عدد الصفحات.</p>
@@ -359,6 +358,16 @@
         </details>
       </div>
     </section>
+
+    <!-- Social (moved to last section) -->
+    <section id="social" class="contact-box reveal" aria-label="قنوات التواصل">
+      <div class="text">للاستفسار والطلبات السريعة:</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <a class="btn" href="mailto:mshlool684@gmail.com">راسلني عبر الإيميل</a>
+        <a class="btn btn-ig" href="https://instagram.com/shlool_web" target="_blank" rel="noopener">زيارة إنستجرام</a>
+        <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener">تواصل واتساب</a>
+      </div>
+    </section>
   </main>
 
   <footer class="wrap">
@@ -366,7 +375,9 @@
       <div class="brand">© Shlool Web — جميع الحقوق محفوظة</div>
       <div style="display:flex; gap:10px; align-items:center">
         <div class="dev">تم التطوير من قبل محمد الشلول</div>
-        <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener">واتساب: 0790986908</a>
+        <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener">
+          واتساب: <span class="ltr">+962 79 098 6908</span>
+        </a>
       </div>
     </div>
   </footer>
