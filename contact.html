@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>اطلب موقعك — Shlool Web</title>
-  <meta name="description" content="اطلب موقعك الآن: اختر نوع الموقع، الميزات، المدة وعدد الصفحات التقريبي. نرجّع لك عرض خلال وقت قصير.">
+  <meta name="description" content="اطلب موقعك الآن: اختر الميزات والمدة. نرجع لك بعرض خلال وقت قصير.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
@@ -12,6 +12,7 @@
       --bg:#1f1f1f; --card:#262626; --surface:#202020;
       --blue:#0a84ff; --blue-2:#40b3ff;
       --whatsapp:#25D366; --whatsapp-2:#128C7E;
+      --ig1:#f58529; --ig2:#dd2a7b; --ig3:#8134af; --ig4:#515bd4;
       --text:#e9ecf1; --muted:#b7c0cc;
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:16px; --max:1100px;
@@ -47,6 +48,8 @@
     .btn-outline{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.16)}
     .btn-whatsapp{background:linear-gradient(135deg,var(--whatsapp),var(--whatsapp-2)); color:#fff}
     .btn-whatsapp:hover{box-shadow:0 16px 40px rgba(18,140,126,.28)}
+    .btn-ig{background:linear-gradient(135deg,var(--ig4),var(--ig3),var(--ig2),var(--ig1)); color:#fff}
+    .btn-ig:hover{box-shadow:0 16px 40px rgba(221,42,123,.28)}
 
     .hero{display:grid; grid-template-columns:1.05fr .95fr; gap:24px; align-items:center; padding-block:28px}
     .title{font-size:clamp(28px, 4vw, 44px); line-height:1.2; margin:0 0 10px; font-weight:800}
@@ -78,6 +81,14 @@
     .choices label{font-weight:600; display:flex; gap:8px; align-items:flex-start}
     .choices input[type="checkbox"]{width:18px; height:18px; margin-top:2px}
     .actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-start; margin-top:14px}
+
+    /* Estimator card */
+    .estimator{display:flex; align-items:center; justify-content:space-between; gap:14px}
+    .estimate-pill{
+      padding:8px 12px; border-radius:999px; background:rgba(10,132,255,.12);
+      border:1px solid rgba(64,179,255,.25); color:#fff; font-weight:800
+    }
+    .small{color:var(--muted); font-size:13px}
 
     footer{
       background:var(--surface);
@@ -111,11 +122,14 @@
         <div class="badge">طلب موقع جديد ✨</div>
         <h1 class="title">خلّينا نبني لك موقع <span style="color:var(--blue)">يناسب بزنسك</span></h1>
         <p class="subtitle">عبّي الطلب أدناه — نراجع التفاصيل ونرجع لك بعرض سعر وخطة عمل خلال وقت قصير.</p>
-        <div class="actions">
+
+        <div class="actions" style="margin-top:10px">
           <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener">تواصل واتساب</a>
+          <a class="btn btn-ig" href="https://instagram.com/shlool_web" target="_blank" rel="noopener" aria-label="التواصل عبر إنستجرام">إنستجرام</a>
           <a class="btn" href="mailto:mshlool684@gmail.com">راسلني عبر الإيميل</a>
         </div>
       </div>
+
       <div class="panel reveal">
         <h3 style="margin:0 0 10px">ليش معنا؟</h3>
         <ul style="margin:0; padding-inline-start:18px; color:var(--muted)">
@@ -133,6 +147,9 @@
       <p class="hint">الحقول المعلَّمة بـ (*) مطلوبة. الإرسال يتم عبر واتساب أو بريد — بدون أي باك-إند.</p>
 
       <form id="siteForm" novalidate>
+        <!-- HoneyPot لمكافحة السبام -->
+        <input id="hp" name="website" type="text" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
+
         <!-- معلومات أساسية -->
         <div class="grid-3">
           <div>
@@ -192,7 +209,7 @@
         <!-- ميزات مطلوبة -->
         <div style="margin-top:10px">
           <label>الميزات المطلوبة (اختَر ما يلزم)</label>
-          <div class="choices">
+          <div class="choices" id="featureChoices">
             <label><input type="checkbox" value="منيو أونلاين وQR"> منيو أونلاين وQR</label>
             <label><input type="checkbox" value="طلبات أونلاين بسيطة"> طلبات أونلاين بسيطة</label>
             <label><input type="checkbox" value="حجز مواعيد إلى الإيميل"> حجز مواعيد إلى الإيميل</label>
@@ -208,8 +225,71 @@
           </div>
         </div>
 
-        <!-- المدة + عدد الصفحات + تفضيل التواصل -->
+        <!-- الباقة المقترحة -->
+        <div class="panel estimator reveal" id="estimator" style="margin-top:12px">
+          <div>
+            <strong>الباقة المقترحة:</strong>
+            <span id="recName" class="estimate-pill">—</span>
+            <span class="small" id="recReason"></span>
+          </div>
+          <div>
+            <span class="small">سعر مبدئي:</span>
+            <strong id="recPrice">—</strong>
+          </div>
+        </div>
+
+        <!-- تفضيلات تصميم وهوية -->
         <div class="grid-3" style="margin-top:16px">
+          <div>
+            <label for="brandColor">اللون الأساسي المفضّل</label>
+            <input id="brandColor" type="color" value="#0a84ff" style="height:44px;padding:4px">
+          </div>
+          <div>
+            <label for="stylePref">ستايل التصميم</label>
+            <select id="stylePref">
+              <option value="">اختر…</option>
+              <option>مودرن وبسيط</option>
+              <option>كلاسيك/رسمي</option>
+              <option>داكن</option>
+              <option>فاتح</option>
+            </select>
+          </div>
+          <div>
+            <label for="assetsLink">رابط ملفات المحتوى</label>
+            <input id="assetsLink" type="url" placeholder="Drive / Dropbox link">
+          </div>
+        </div>
+
+        <!-- مواقع مرجعية + وقت التواصل -->
+        <div class="grid-2" style="margin-top:12px">
+          <div>
+            <label for="ref1">موقع يعجبك (1)</label>
+            <input id="ref1" type="url" placeholder="https://…">
+          </div>
+          <div>
+            <label for="ref2">موقع يعجبك (2)</label>
+            <input id="ref2" type="url" placeholder="https://…">
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:12px">
+          <div>
+            <label for="contactTime">وقت التواصل المفضّل</label>
+            <input id="contactTime" type="text" placeholder="مثال: 5–8 مساءً">
+          </div>
+          <div>
+            <label for="contactPref">طريقة التواصل المفضلة</label>
+            <select id="contactPref">
+              <option value="">اختر…</option>
+              <option>واتساب</option>
+              <option>اتصال هاتفي</option>
+              <option>بريد إلكتروني</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- المدة + الصفحات -->
+        <div class="grid-2" style="margin-top:12px">
           <div>
             <label for="timeline">الإطار الزمني المرغوب *</label>
             <select id="timeline" required>
@@ -232,27 +312,27 @@
             </select>
             <p class="hint">يفيدنا بتقدير نطاق العمل والمدة.</p>
           </div>
-          <div>
-            <label for="contactPref">طريقة التواصل المفضلة</label>
-            <select id="contactPref">
-              <option value="">اختر…</option>
-              <option>واتساب</option>
-              <option>اتصال هاتفي</option>
-              <option>بريد إلكتروني</option>
-            </select>
-          </div>
         </div>
 
-        <!-- ملاحظات إضافية -->
+        <!-- ملاحظات -->
         <div style="margin-top:16px">
           <label for="notes">ملاحظات إضافية</label>
-          <textarea id="notes" rows="6" placeholder="اكتب أي تفاصيل إضافية ترغب بها: صفحات مطلوبة، مواقع تعجبك كمثال، ألوان، لغة ثانية، وغيرها…"></textarea>
+          <textarea id="notes" rows="6" placeholder="اكتب أي تفاصيل إضافية ترغب بها: أقسام مطلوبة، ألوان، لغة ثانية، وغير ذلك…"></textarea>
+        </div>
+
+        <!-- سياسة خصوصية -->
+        <div class="actions" style="margin-top:6px">
+          <label style="display:flex;gap:8px;align-items:center">
+            <input id="agree" type="checkbox" required>
+            <span>أوافق على سياسة الخصوصية واستخدام بيانات التواصل للرد على الطلب.</span>
+          </label>
         </div>
 
         <!-- إرسال -->
         <div class="actions">
           <button type="submit" class="btn btn-whatsapp"><span>إرسال عبر واتساب</span></button>
           <button type="button" id="sendEmail" class="btn btn-outline">إرسال عبر الإيميل</button>
+          <button type="button" id="copySummary" class="btn btn-outline">نسخ الطلب</button>
           <a class="btn btn-outline" href="index.html">رجوع للرئيسية</a>
         </div>
       </form>
@@ -270,26 +350,75 @@
   </footer>
 
   <script>
-    // ظهور ناعم عند التمرير
+    // ظهور ناعم
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target);} });
     },{threshold:.08});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
+    /* ===== أدوات ===== */
+    const $ = id => document.getElementById(id);
+
+    // قراءة الميزات المختارة
+    function getSelectedFeatures(){
+      return Array.from(document.querySelectorAll('#featureChoices input:checked')).map(c=>c.value);
+    }
+
+    // توصية تلقائية للباقة والسعر
+    function getRecommendation(){
+      const f = getSelectedFeatures();
+      let plan = 'الأساسية', price = '70 د.أ', reason = 'موقع تعريفي وميزات أساسية.';
+      if (f.includes('دفع أونلاين')) {
+        plan = 'المتقدمة'; price = '270 د.أ'; reason = 'يتضمن دفع أونلاين وتكاملات.';
+      } else {
+        const group = ['منيو أونلاين وQR','حجز مواعيد إلى الإيميل','طلبات أونلاين بسيطة','معرض صور/أعمال','مدونة/مقالات','تعدد اللغات','تأمين دومين واستضافة'];
+        const count = f.filter(x=>group.includes(x)).length;
+        if (count >= 2) { plan = 'برو'; price = '170 د.أ'; reason = `اخترت ${count} ميزات متقدمة.`; }
+      }
+      return {plan, price, reason};
+    }
+
+    function updateEstimator(){
+      const r = getRecommendation();
+      $('recName').textContent = r.plan;
+      $('recPrice').textContent = r.price;
+      $('recReason').textContent = r.reason;
+    }
+    document.querySelectorAll('#featureChoices input, #siteType').forEach(el=>{
+      el.addEventListener('change', updateEstimator);
+    });
+    updateEstimator();
+
+    // التقاط UTM من العنوان
+    const utm = (() => {
+      const p = new URLSearchParams(location.search);
+      const keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'];
+      const obj = {};
+      keys.forEach(k=>{ if (p.get(k)) obj[k] = p.get(k); });
+      return obj;
+    })();
+
     function buildSummary() {
-      const get = id => document.getElementById(id);
-      const name = get('fullName').value.trim();
-      const phone = get('phone').value.trim();
-      const email = get('email').value.trim();
-      const business = get('business').value.trim();
-      const industry = get('industry').value;
-      const currentSite = get('currentSite').value.trim();
-      const siteType = get('siteType').value;
-      const timeline = get('timeline').value;
-      const pages = get('pages').value;
-      const contactPref = get('contactPref').value;
-      const notes = get('notes').value.trim();
-      const features = Array.from(document.querySelectorAll('.choices input:checked')).map(c=>c.value);
+      const name = $('fullName').value.trim();
+      const phone = $('phone').value.trim();
+      const email = $('email').value.trim();
+      const business = $('business').value.trim();
+      const industry = $('industry').value;
+      const currentSite = $('currentSite').value.trim();
+      const siteType = $('siteType').value;
+      const features = getSelectedFeatures();
+      const timeline = $('timeline').value;
+      const pages = $('pages').value;
+      const contactPref = $('contactPref').value;
+      const notes = $('notes').value.trim();
+
+      const contactTime = $('contactTime').value.trim();
+      const stylePref = $('stylePref').value;
+      const brandColor = $('brandColor').value;
+      const assetsLink = $('assetsLink').value.trim();
+      const refs = [ $('ref1').value.trim(), $('ref2').value.trim() ].filter(Boolean);
+
+      const rec = getRecommendation();
 
       const lines = [
         'طلب موقع جديد:',
@@ -301,26 +430,37 @@
         currentSite ? `موقع حالي: ${currentSite}` : null,
         `نوع الموقع: ${siteType || '-'}`,
         features.length ? `ميزات مطلوبة: ${features.join('، ')}` : null,
+        stylePref ? `ستايل التصميم: ${stylePref}` : null,
+        brandColor ? `لون العلامة: ${brandColor}` : null,
+        assetsLink ? `رابط الملفات: ${assetsLink}` : null,
+        refs.length ? `مواقع تعجب العميل: ${refs.join(' , ')}` : null,
+        contactTime ? `وقت التواصل المفضّل: ${contactTime}` : null,
         `المدة المرغوبة: ${timeline || '-'}`,
         pages ? `عدد الصفحات التقريبي: ${pages}` : null,
         contactPref ? `طريقة التواصل: ${contactPref}` : null,
-        notes ? '\nملاحظات إضافية:\n' + notes : null
+        `الباقة المقترحة: ${rec.plan} — سعر مبدئي: ${rec.price}`,
+        notes ? '\nملاحظات إضافية:\n' + notes : null,
+        Object.keys(utm).length ? '\nوسوم UTM:\n' + JSON.stringify(utm) : null
       ].filter(Boolean);
 
       return lines.join('\n');
     }
 
     function validateRequired() {
-      const req = ['fullName','phone','email','siteType','timeline'];
+      const req = ['fullName','phone','email','siteType','timeline','agree'];
       let ok = true;
       req.forEach(id=>{
         const el = document.getElementById(id);
-        if(!el.value.trim()){
+        if((el.type === 'checkbox' && !el.checked) || (!el.type || el.type !== 'checkbox') && !el.value.trim()){
           ok = false;
           el.style.borderColor = '#ff6b6b';
           el.addEventListener('input', ()=> el.style.borderColor='rgba(255,255,255,.08)', {once:true});
         }
       });
+      // HoneyPot
+      if (document.getElementById('hp').value.trim()){
+        ok = false; alert('تم إيقاف الإرسال (مرشح سبام).');
+      }
       return ok;
     }
 
@@ -337,6 +477,12 @@
       const body = encodeURIComponent(buildSummary());
       const subject = encodeURIComponent('طلب موقع جديد — Shlool Web');
       window.location.href = `mailto:mshlool684@gmail.com?subject=${subject}&body=${body}`;
+    });
+
+    document.getElementById('copySummary').addEventListener('click', async function(){
+      const txt = buildSummary();
+      try { await navigator.clipboard.writeText(txt); alert('تم نسخ الطلب إلى الحافظة ✅'); }
+      catch { alert('لم نتمكّن من النسخ تلقائيًا. انسخ يدويًا بعد تحديد النص.'); }
     });
   </script>
 </body>
