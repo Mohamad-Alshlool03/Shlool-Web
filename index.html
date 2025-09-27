@@ -4,23 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Shlool Web — موقعك أونلاين خلال أسبوع</title>
-  <meta name="description" content="تصميم وتطوير مواقع احترافية للمطاعم والعيادات والشركات. موقعك أونلاين خلال أسبوع.">
+  <meta name="description" content="تصميم وتطوير مواقع احترافية. موقعك أونلاين خلال أسبوع.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#1f1f1f;        /* خلفية عامة */
-      --card:#262626;      /* بطاقات */
-      --surface:#202020;   /* هيدر/فوتر */
-      --blue:#0a84ff;      /* أزرق أساسي */
-      --blue-2:#40b3ff;    /* أزرق فاتح */
-      --whatsapp:#25D366;  /* واتساب */
-      --whatsapp-2:#128C7E;
-      --text:#e9ecf1;
-      --muted:#b7c0cc;
+      --bg:#1f1f1f; --card:#262626; --surface:#202020;
+      --blue:#0a84ff; --blue-2:#40b3ff;
+      --whatsapp:#25D366; --whatsapp-2:#128C7E;
+      --ig1:#f58529; --ig2:#dd2a7b; --ig3:#8134af; --ig4:#515bd4;
+      --text:#e9ecf1; --muted:#b7c0cc;
       --shadow:0 10px 30px rgba(0,0,0,.35);
-      --radius:16px;
-      --max:1100px;
+      --radius:16px; --max:1100px;
     }
     *{box-sizing:border-box}
     body{
@@ -32,7 +27,7 @@
     }
     a{color:var(--blue); text-decoration:none}
 
-    /* هيدر مميز */
+    /* Header */
     header{
       position:sticky; top:0; backdrop-filter:saturate(1.2) blur(8px);
       background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.0));
@@ -41,10 +36,10 @@
     }
     .nav{max-width:var(--max); margin:auto; padding:14px 20px; display:flex; align-items:center; gap:16px}
     .logo{display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.3px; color:var(--text)}
-    .logo-img{
-      height:52px; width:auto; border-radius:10px; box-shadow:var(--shadow); display:block;
-    }
-    .nav a.btn{margin-inline-start:auto}
+    .logo-img{height:52px; width:auto; border-radius:10px; box-shadow:var(--shadow); display:block}
+    .nav-links{display:flex; gap:14px; margin-inline-start:auto}
+    .nav a.btn{margin-inline-start:12px}
+    @media (max-width:900px){ .nav-links{display:none} }
 
     .btn{
       display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px;
@@ -52,27 +47,16 @@
       box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .2s ease;
     }
     .btn:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(10,132,255,.25)}
-
-    /* زر واتساب */
-    .btn-whatsapp{
-      background:linear-gradient(135deg,var(--whatsapp),var(--whatsapp-2));
-      color:#fff;
-    }
-    .btn-whatsapp:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 16px 40px rgba(18,140,126,.28);
-    }
-    .btn-whatsapp .icon{width:18px;height:18px;display:inline-block;vertical-align:middle}
+    .btn-whatsapp{background:linear-gradient(135deg,var(--whatsapp),var(--whatsapp-2)); color:#fff}
+    .btn-ig{background:linear-gradient(135deg,var(--ig4),var(--ig3),var(--ig2),var(--ig1)); color:#fff}
 
     .wrap{max-width:var(--max); margin:auto; padding:28px 20px}
     .hero{display:grid; grid-template-columns:1.1fr .9fr; gap:28px; align-items:center; padding-block:32px}
     .title{font-size:clamp(30px, 4vw, 46px); line-height:1.2; margin:0 0 10px; font-weight:800}
     .subtitle{color:var(--muted); font-size:clamp(16px,2.3vw,18px); margin:0 0 20px}
-    .badge{
-      display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
+    .badge{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
       background:rgba(10,132,255,.12); color:var(--blue); font-weight:700; margin-bottom:14px;
-      border:1px solid rgba(64,179,255,.25)
-    }
+      border:1px solid rgba(64,179,255,.25)}
 
     .panel{background:var(--card); border:1px solid rgba(255,255,255,.06);
       border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
@@ -80,22 +64,73 @@
     .service{padding:18px; border-radius:14px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06)}
     .service h3{margin:0 0 6px; font-size:18px}
     .service p{margin:0; color:var(--muted); font-size:14px}
-    .tagline{font-weight:800; color:var(--blue); font-size:22px; margin-top:10px}
 
-    .cta{display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; margin-top:26px}
-    .small{color:var(--muted); font-size:13px}
+    .section-actions{display:flex; gap:12px; align-items:center; justify-content:flex-start; margin-top:18px}
 
-    /* فوتر مميز */
+    /* Contact box */
+    .contact-box{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      background:var(--card); border:1px solid rgba(255,255,255,.06);
+      border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); margin-top:18px;
+    }
+    .contact-box .text{color:var(--muted); font-size:14px}
+
+    /* ===== Pricing (fixed) ===== */
+    .pricing{ margin-top:24px }
+    .pricing .section-title{ margin:0 0 12px; font-weight:800 }
+    .pricing .section-subtitle{ color:var(--muted); margin:0 0 16px; font-size:14px }
+
+    .pricing-cards{
+      display:flex; gap:16px; justify-content:center; flex-wrap:wrap;
+      align-items:stretch;
+    }
+    .price-card{
+      position:relative; overflow:visible;
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:14px;
+      width:320px; padding:20px;
+      text-align:right; box-shadow:var(--shadow);
+      transition:transform .2s ease, box-shadow .2s ease;
+      display:flex; flex-direction:column;
+      min-height:420px;
+    }
+    .price-card:hover{ transform:translateY(-6px) }
+    .price-card h3{ margin:0 0 8px; color:#3ab4ff; font-weight:800 }
+    .price{ font-size:24px; margin-bottom:10px }
+    .price span{ font-size:12px; color:#9aa7b3; margin-inline-start:6px }
+    .features{ list-style:none; padding:0; margin:12px 0 16px; color:var(--muted); flex:1 }
+    .features li{ margin:8px 0; padding-inline-start:20px; position:relative; line-height:1.8 }
+    .features li::before{ content:"✔"; position:absolute; inset-inline-start:0; color:#21d07a; font-weight:900 }
+    .btn-primary{ display:inline-flex; justify-content:center; width:100%; padding:10px 14px; border-radius:10px; background:#27b0ff; color:#fff; font-weight:800; text-decoration:none; margin-top:auto }
+    .featured{ border:2px solid #27b0ff; box-shadow:0 12px 36px rgba(39,176,255,.22); transform:translateY(-4px) }
+    /* تم حذف أي شارات/خلفيات للبطاقة الوسطى */
+
+    /* ===== FAQ ===== */
+    .faq{ margin-top:24px }
+    .faq .section-title{ margin:0 0 12px; font-weight:800; color:var(--text) }
+    .faq .section-subtitle{ color:var(--muted); margin:0 0 16px; font-size:14px }
+    .faq-list{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px }
+    @media (max-width:900px){ .faq-list{ grid-template-columns:1fr } }
+    .faq details{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:12px 14px; box-shadow:var(--shadow) }
+    .faq summary{ list-style:none; cursor:pointer; font-weight:700; display:flex; align-items:flex-start; gap:10px; color:#fff }
+    .faq summary::-webkit-details-marker{ display:none }
+    .faq .chev{ inline-size:18px; block-size:18px; flex:0 0 18px; border:2px solid rgba(255,255,255,.35); border-left:0; border-top:0; transform:rotate(-45deg); margin-top:4px; transition:transform .2s ease, border-color .2s ease }
+    details[open] .chev{ transform:rotate(135deg); border-color:var(--blue) }
+    .faq .answer{ color:var(--muted); margin:10px 4px 4px 0; line-height:1.8 }
+    .faq .answer strong{ color:#fff }
+    .faq ul{ margin:6px 0 0 0; padding-inline-start:18px }
+    .faq li{ margin:6px 0 }
+
+    /* Footer */
     footer{
-      background:var(--surface);
-      border-top:1px solid rgba(255,255,255,.08);
-      box-shadow:0 -6px 20px rgba(0,0,0,.25);
-      margin-top:40px;
+      background:var(--surface); border-top:1px solid rgba(255,255,255,.08);
+      box-shadow:0 -6px 20px rgba(0,0,0,.25); margin-top:40px;
     }
     .brand{opacity:.7}
     .dev{font-weight:800; letter-spacing:.2px}
 
-    /* أنيميشن ظهور */
+    /* Reveal */
     .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
     .reveal.show{opacity:1; transform:none}
 
@@ -110,26 +145,29 @@
   <header>
     <nav class="nav">
       <div class="logo">
-        <!-- صورة الغلاف بدل حرف S -->
         <img class="logo-img" src="cover.jpg" alt="Shlool Web cover">
         <span>Shlool <span style="color:var(--blue)">Web</span></span>
       </div>
-      <!-- زر الحجز يفتح صفحة الاتصال المحلية -->
+
+      <div class="nav-links">
+        <a href="#pricing">الباقات</a>
+        <a href="#faq">الأسئلة الشائعة</a>
+      </div>
+
       <a class="btn" href="./contact.html">احجز موقعك الآن ⚡</a>
     </nav>
   </header>
 
   <main class="wrap">
+    <!-- Hero -->
     <section class="hero">
       <div>
         <div class="badge">موقعك أونلاين خلال أقل من أسبوع ✨</div>
         <h1 class="title">نصمم ونطوّر مواقع <span style="color:var(--blue)">احترافية</span> تبيع وتكبر بزنسك</h1>
-        <p class="subtitle">مطاعم، عيادات، شركات ومتاجر إلكترونية — ربط QR، منيو أونلاين، نماذج تواصل تصل للإيميل مباشرة.</p>
-        <!-- (تم حذف السطر الصغير كما طلبت) -->
+        <p class="subtitle">ربط QR، منيو أونلاين، حجوزات، تواصل يصل للإيميل مباشرة — وكل الميزات اللي بتحتاجها.</p>
       </div>
-
       <div class="panel reveal">
-        <h2 class="tagline">الخدمات</h2>
+        <h2 style="margin:0 0 10px;font-weight:800;color:var(--blue)">الخدمات</h2>
         <div class="grid">
           <div class="service reveal">
             <h3>مواقع مطاعم 🍔</h3>
@@ -144,11 +182,12 @@
             <p>تعريف بالخدمات، نماذج تواصل، وبروفايل احترافي.</p>
           </div>
         </div>
-        <p class="tagline">وأي نوع موقع آخر بتحتاجه ✨</p>
+        <p style="font-weight:800;color:var(--blue);margin-top:10px">وأي نوع موقع آخر بتحتاجه ✨</p>
       </div>
     </section>
 
-    <section class="panel reveal" aria-label="أعمال مختارة">
+    <!-- Work examples -->
+    <section class="panel reveal" aria-label="أمثلة من الشغل">
       <h2 style="margin-top:0">أمثلة من الشغل</h2>
       <div class="grid">
         <a class="service" href="https://mohamad-alshlool03.github.io/mohamadalshlool.github.io/" target="_blank" rel="noopener">
@@ -159,47 +198,183 @@
           <h3>مركز علاج طبيعي</h3>
           <p>حجز مواعيد وإشعارات عبر الإيميل.</p>
         </a>
-        <!-- تم استبدال مطعم الشاورما بمطعم الفلافل -->
         <a class="service" href="https://mohamad-alshlool03.github.io/Falafel_resturant/" target="_blank" rel="noopener">
           <h3>مطعم فلافل</h3>
           <p>منيو أونلاين وتواصل مباشر.</p>
         </a>
       </div>
 
-      <!-- أزرار بجانب بعض: الإيميل + واتساب + ابدأ الآن -->
-      <div class="cta">
-        <span class="small">🔐 نلتزم بالصور والخطوط المرخصة — قد نستخدم بدائل مجانية عالية الجودة.</span>
-        <div style="display:flex; gap:10px; align-items:center; margin-inline-start:auto">
-          <a class="btn" href="mailto:you@example.com">راسلني عبر الإيميل</a>
-          <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener" aria-label="تواصل واتساب">
-            تواصل واتساب
-            <svg class="icon" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M19.1 17.4c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a8.4 8.4 0 0 1-4-3.5c-.3-.4.3-.4.8-1.2s.1-.7 0-1c0-.1-.6-1.5-.8-2s-.4-.4-.6-.4h-.5c-.2 0-.6.1-.9.4s-1.1 1-1.1 2.5 1.1 2.9 1.2 3.1 2.2 3.3 5.2 4.6c2.6 1.1 3.1 1 3.7.9s1.8-.7 2-1.4.2-1.2.1-1.4-.2-.2-.4-.3zM16 4a12 12 0 0 0-10.4 18L4 28l6.1-1.6A12 12 0 1 0 16 4zm0 21.3a9.3 9.3 0 0 1-4.8-1.3l-.3-.2-3.6 1 1-3.5-.2-.3A9.3 9.3 0 1 1 16 25.3z"/></svg>
-          </a>
-          <a class="btn" href="./contact.html">ابدأ الآن</a>
+      <div class="section-actions">
+        <a class="btn" href="./contact.html">ابدأ الآن</a>
+      </div>
+    </section>
+
+    <!-- Contact box -->
+    <section class="contact-box reveal" aria-label="قنوات التواصل">
+      <div class="text">للاستفسار والطلبات السريعة:</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <a class="btn" href="mailto:mshlool684@gmail.com">راسلني عبر الإيميل</a>
+        <a class="btn btn-ig" href="https://instagram.com/shlool_web" target="_blank" rel="noopener">زيارة إنستجرام</a>
+        <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener">تواصل واتساب</a>
+      </div>
+    </section>
+
+    <!-- Pricing (before FAQ) -->
+    <section class="panel reveal pricing" id="pricing" aria-label="باقات التصميم والتطوير">
+      <h2 class="section-title">باقات التصميم والتطوير</h2>
+      <p class="section-subtitle">التسعير حسب <strong>الميزات</strong> — مش على عدد الصفحات.</p>
+
+      <div class="pricing-cards">
+        <article class="price-card">
+          <header>
+            <h3>الباقة الأساسية</h3>
+            <div class="price"><span>ابتداءً من</span> 70 د.أ</div>
+          </header>
+          <ul class="features">
+            <li>موقع تعريفي متجاوب</li>
+            <li>نموذج تواصل للإيميل + زر واتساب</li>
+            <li>أساسيات السرعة وتهيئة SEO</li>
+            <li>ربط خرائط جوجل (اختياري)</li>
+          </ul>
+          <a href="./contact.html" class="btn-primary">اطلب الآن</a>
+        </article>
+
+        <article class="price-card featured">
+          <header>
+            <h3>الباقة برو</h3>
+            <div class="price"><span>ابتداءً من</span> 170 د.أ</div>
+          </header>
+          <ul class="features">
+            <li>كل ميزات <strong>الأساسية</strong> + اختر <strong>ميزتين</strong> من:</li>
+            <li>قائمة أونلاين + QR</li>
+            <li>حجوزات تصل للإيميل</li>
+            <li>معرض صور/أعمال أو مدوّنة</li>
+            <li>تعدد اللغات (لغتان)</li>
+            <li>طلبات أونلاين بسيطة (بدون دفع)</li>
+            <li>إعداد دومين واستضافة</li>
+          </ul>
+          <a href="./contact.html" class="btn-primary">ابنِ باقتك وابدأ</a>
+        </article>
+
+        <article class="price-card">
+          <header>
+            <h3>الباقة المتقدمة</h3>
+            <div class="price"><span>ابتداءً من</span> 270 د.أ</div>
+          </header>
+          <ul class="features">
+            <li>كل ميزات <strong>برو</strong> +</li>
+            <li>نظام إدارة محتوى (CMS)</li>
+            <li>دفع أونلاين/تكاملات عند الحاجة</li>
+            <li>تعدد اللغات حتى 3 لغات</li>
+            <li>نسخ احتياطي وأمان أساسي + تقارير زيارات</li>
+          </ul>
+          <a href="./contact.html" class="btn-primary">اطلب المتقدمة</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="panel reveal faq" id="faq" aria-label="الأسئلة الشائعة">
+      <h2 class="section-title">الأسئلة الشائعة</h2>
+      <p class="section-subtitle">كل شيء عن الإجراءات، المدة، الدفع، التسليم، والدعم بعد الإطلاق.</p>
+
+      <details open>
+        <summary><span class="chev"></span> ما هي خطوات العمل من البداية للنهاية؟</summary>
+        <div class="answer">
+          <ol style="margin:8px 0 0; padding-inline-start:18px">
+            <li><strong>استشارة سريعة مجانًا:</strong> نفهم الهدف والميزات المطلوبة.</li>
+            <li><strong>جمع المحتوى:</strong> لوجو/صور/نصوص (أساعدك لو ناقص شيء).</li>
+            <li><strong>تصميم أولي:</strong> نعرض شكل مبدئي ونأخذ ملاحظاتك.</li>
+            <li><strong>التطوير والاختبار:</strong> تأكد من السرعة والتوافق مع الجوال.</li>
+            <li><strong>التسليم والتدريب:</strong> شرح مختصر لإدارة المحتوى/التحديثات.</li>
+            <li><strong>إطلاق ودعم:</strong> متابعة أولية + إمكانية صيانة شهرية اختيارية.</li>
+          </ol>
         </div>
+      </details>
+
+      <div class="faq-list" style="margin-top:12px">
+        <details>
+          <summary><span class="chev"></span> كم مدة التنفيذ؟ وهل أقدر أستعجل الطلب؟</summary>
+          <div class="answer">
+            المواقع الصغيرة غالبًا خلال <strong>أقل من أسبوع</strong>، والمتوسطة <strong>1–2 أسبوع</strong>، والمشاريع الأكبر <strong>3–4 أسابيع</strong>. في خانة الطلب اختر الإطار الزمني المناسب، ولو مستعجل نضبط الأولويات.
+          </div>
+        </details>
+
+        <details>
+          <summary><span class="chev"></span> كيف يتم التسعير؟ وهل يعتمد على عدد الصفحات؟</summary>
+          <div class="answer">
+            التسعير عندنا يعتمد على <strong>الميزات</strong> وليس عدد الصفحات. لدينا ثلاث باقات مبدئية:
+            <ul>
+              <li><strong>الأساسية</strong> — ابتداءً من <strong>70 د.أ</strong></li>
+              <li><strong>برو</strong> — ابتداءً من <strong>170 د.أ</strong></li>
+              <li><strong>المتقدمة</strong> — ابتداءً من <strong>270 د.أ</strong></li>
+            </ul>
+            السعر النهائي يتحدد بعد اختيار الميزات المطلوبة في <a href="./contact.html">نموذج الطلب</a>.
+          </div>
+        </details>
+
+        <details>
+          <summary><span class="chev"></span> ماذا أحتاج لتجهيز المحتوى؟</summary>
+          <div class="answer">
+            شعار (إن وجد)، صور، نصوص تعريفية وخدمات، وبيانات التواصل. إن لم يتوفر كل شيء، أساعدك بصياغة النصوص والبحث عن صور مرخّصة مناسبة.
+          </div>
+        </details>
+
+        <details>
+          <summary><span class="chev"></span> هل المواقع متوافقة مع الجوال وسريعة؟</summary>
+          <div class="answer">
+            نعم، جميع المواقع <strong>متجاوبة</strong> ومجهزة بـ<strong>تحسين سرعة وSEO أساسي</strong> ضمن الباقات. يمكن طلب تحسينات متقدمة كإضافة.
+          </div>
+        </details>
+
+        <details>
+          <summary><span class="chev"></span> ما خيارات الدفع والدومين والاستضافة؟</summary>
+          <div class="answer">
+            الدومين والاستضافة خدمات <strong>اشتراكات</strong> (سنوية/شهرية) من مزودين خارجيين.
+            أنا كمطوّر أوفّر لك <strong>الإعداد للسنة الأولى</strong> ضمن التنفيذ (اختياري)، وبعدها يكون
+            <strong>التجديد على المشتري مباشرة</strong> مع شركة الاستضافة/الدومين. وبساعدك في التجديد أو النقل عند الحاجة.
+            الدفع على المشروع نفسه عادةً على دفعتين: <strong>عربون عند البدء</strong> والباقي <strong>عند التسليم</strong>.
+          </div>
+        </details>
+
+        <details>
+          <summary><span class="chev"></span> كم عدد التعديلات بعد التسليم؟ وهل في صيانة؟</summary>
+          <div class="answer">
+            تتضمن الباقات <strong>تعديلات بسيطة</strong> بعد التسليم لضبط التفاصيل. يمكن إضافة <strong>صيانة شهرية</strong> تشمل نسخ احتياطي، مراقبة، وتحديثات محتوى.
+          </div>
+        </details>
+
+        <details>
+          <summary><span class="chev"></span> هل تدعمون تعدد اللغات وCMS؟</summary>
+          <div class="answer">
+            نعم. تعدد اللغات متاح في <strong>برو (لغتان)</strong> والمتقدمة (حتى <strong>3 لغات</strong>). نظام إدارة المحتوى (CMS) ضمن <strong>الباقة المتقدمة</strong>.
+          </div>
+        </details>
+
+        <details>
+          <summary><span class="chev"></span> كيف أتواصل أو أطلب عرض سعر؟</summary>
+          <div class="answer">
+            عبر <a href="./contact.html">نموذج الطلب</a> أو مباشرة من خلال <a href="https://wa.me/962790986908" target="_blank" rel="noopener">واتساب</a> أو <a href="mailto:mshlool684@gmail.com">الإيميل</a>. نراجع الطلب ونرجع لك بعرض وخطة عمل مختصرة.
+          </div>
+        </details>
       </div>
     </section>
   </main>
 
   <footer class="wrap">
-    <div class="cta">
+    <div class="section-actions" style="justify-content:space-between">
       <div class="brand">© Shlool Web — جميع الحقوق محفوظة</div>
-      <!-- تم التطوير + زر واتساب -->
-      <div style="display:flex; gap:10px; align-items:center; margin-inline-start:auto">
+      <div style="display:flex; gap:10px; align-items:center">
         <div class="dev">تم التطوير من قبل محمد الشلول</div>
-        <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener" aria-label="تواصل واتساب مع محمد الشلول">
-          واتساب: 0790986908
-        </a>
+        <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener">واتساب: 0790986908</a>
       </div>
     </div>
   </footer>
 
   <script>
-    // ظهور العناصر أثناء التمرير
+    // Reveal on scroll
     const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); }
-      });
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } });
     },{threshold:.08});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
   </script>
