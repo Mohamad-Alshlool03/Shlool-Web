@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>اطلب موقعك — Shloول Web</title>
+  <title>اطلب موقعك — Shlool Web</title>
   <meta name="description" content="اطلب موقعك الآن: اختر الميزات والمدة. نرجع لك بعرض خلال وقت قصير.">
   <meta name="color-scheme" content="dark light">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,6 @@
     }
     a{color:var(--blue); text-decoration:none}
     img{max-width:100%; height:auto; display:block}
-
     header{
       position:sticky; top:0; backdrop-filter:saturate(1.2) blur(8px);
       background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.0));
@@ -160,15 +159,11 @@
       <h2 style="margin-top:0">نموذج طلب موقع</h2>
       <p class="hint" id="reqHint">الحقول المعلَّمة بـ (*) مطلوبة. **الإرسال يتم إلى بريدك أولًا** عبر FormSubmit ثم إعادة التوجيه إلى صفحة الشكر.</p>
 
-      <!-- ملاحظة: عدّل بريدك في action إن رغبت -->
       <form id="siteForm"
             action="https://formsubmit.co/mshlool684@gmail.com"
             method="POST"
             novalidate autocomplete="on">
-        <!-- HoneyPot (لـ FormSubmit استخدم _honey) -->
         <input id="hp" class="hp-trap" name="_honey" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
-
-        <!-- إعدادات FormSubmit -->
         <input type="hidden" name="_next" value="https://mohamad-alshlool03.github.io/Shlool-Web/thankyou.html">
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_template" value="table">
@@ -354,9 +349,9 @@
   </footer>
 
   <script>
-    // === إعدادات الويب آب (غَيّر السطرين التاليين) ===
-    const WEB_APP_URL = 'PUT_EXEC_URL_HERE'; // الصق رابط ال exec الكامل
-    const WEB_APP_TOKEN = 'Mohamad&03';      // نفس TOKEN في Apps Script
+    // === إعدادات الويب آب (تم لصق الرابط) ===
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwDYQZgMCa3OGXNLvtNGJ9KDeI06AthQKpWrip27puCvDI7St9O3OExaekI3in1pH9brw/exec';
+    const WEB_APP_TOKEN = 'Mohamad&03';
 
     // كشف ناعم
     const io = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } }); },{threshold:.08});
