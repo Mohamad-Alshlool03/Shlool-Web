@@ -10,7 +10,7 @@
     :root{
       --bg:#1f1f1f; --card:#262626; --text:#e9ecf1; --muted:#b7c0cc; --blue:#0a84ff; --max:1000px;
       --shadow:0 10px 30px rgba(0,0,0,.35); --radius:16px; --border:rgba(255,255,255,.08);
-      --accent: var(--blue); /* سيتم ضبطها ديناميكيًا من brandColor */
+      --accent: var(--blue);
     }
     *{box-sizing:border-box}
     body{
@@ -35,17 +35,14 @@
     .btn.ghost{background:transparent; color:var(--text)}
     .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space:pre-wrap; background:#1f1f1f; padding:12px; border-radius:12px; border:1px solid var(--border)}
     .note{color:var(--muted); font-size:13px}
-
-    /* شارة رقم الطلب */
     .badge{display:inline-flex; align-items:center; gap:8px; font-weight:800; padding:6px 10px; border-radius:999px;
            background:rgba(255,255,255,.06); border:1px solid var(--border); color:#fff; font-size:14px}
     .thanks{position:relative; overflow:hidden}
-    /* سيتم تلوين لوحة الشكر عبر JS بإضافة خلفية متدرجة حسب --accent */
   </style>
 </head>
 <body>
   <main class="wrap">
-    <!-- تفاصيل الطلب أولاً -->
+    <!-- تفاصيل الطلب -->
     <section class="panel" aria-labelledby="detailsTitle">
       <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
         <h1 id="detailsTitle" style="margin-bottom:0">تفاصيل الطلب</h1>
@@ -70,28 +67,42 @@
       <p class="note">* لو ما ظهر شيء، تأكد إنك أرسلت الطلب من صفحة التواصل نفسها.</p>
     </section>
 
-    <!-- رسالة الشكر بعد التفاصيل -->
+    <!-- رسالة الشكر -->
     <section class="panel thanks" id="thanksPanel" style="margin-top:18px">
       <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
         <h2 style="margin:0; color:inherit">شكرًا! ✅</h2>
         <div class="badge" aria-hidden="true">#<span id="orderIdMirror">—</span></div>
       </div>
       <p id="thanksText" style="color:inherit">استلمنا تفاصيل طلبك، ورح نراجعها ونرجع لك خلال وقت قصير.</p>
+
+      <!-- أزرار تواصل جاهزة برسالة فيها رقم الطلب -->
       <div class="btns">
         <a class="btn" href="index.html">العودة للرئيسية</a>
+        <a class="btn" id="whBtn" target="_blank" rel="noopener">إرسال عبر واتساب</a>
+        <a class="btn ghost" id="mailBtn" target="_blank" rel="noopener">إرسال عبر الإيميل</a>
         <a class="btn" href="https://wa.me/962790986908" target="_blank" rel="noopener">تواصل واتساب</a>
+      </div>
+
+      <!-- QR + رابط تتبّع -->
+      <div id="qrWrap" style="margin-top:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+        <div id="qrcode" style="width:140px; height:140px; background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:12px; display:flex; align-items:center; justify-content:center">QR</div>
+        <div style="max-width:520px">
+          <p style="margin:0;color:inherit">امسح الـ QR لتتبّع طلبك مباشرة.</p>
+          <a id="trackLink" class="btn ghost" href="#" target="_blank" rel="noopener">فتح صفحة التتبّع</a>
+        </div>
       </div>
     </section>
   </main>
 
+  <!-- مكتبة توليد QR خفيفة -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
   <script>
-    // ---------- أدوات مساعدة ----------
+    /* ===== أدوات مساعدة للألوان/التباين ===== */
     function sanitizeColor(input){
       if(!input) return null;
       const v = String(input).trim();
-      // يدعم #RGB أو #RRGGBB أو أسماء ألوان CSS البسيطة
       if(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)) return v;
-      if(/^[a-zA-Z]+$/.test(v)) return v; // مثل red / blue / etc.
+      if(/^[a-zA-Z]+$/.test(v)) return v;
       return null;
     }
     function hexToRgb(hex){
@@ -105,12 +116,9 @@
         const {r,g,b} = hexToRgb(color);
         return `rgba(${r},${g},${b},${alpha})`;
       }
-      // للألوان المسماة نستخدم نفس الاسم مع alpha عبر rgba غير ممكن، فنعطيها خلفية نصف شفافة مع فِلتر
-      // سنكتفي بإرجاع اللون كما هو عندما alpha=1، وإلا نرجع نفس اللون (المتصفحات تتجاهل alpha للأسماء)
-      return alpha===1 ? color : color; 
+      return color;
     }
     function relativeLuminance({r,g,b}){
-      // WCAG
       const srgb = [r,g,b].map(v=>{
         v/=255;
         return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4);
@@ -118,13 +126,11 @@
       return 0.2126*srgb[0] + 0.7152*srgb[1] + 0.0722*srgb[2];
     }
     function getContrastText(color){
-      // يرجّع أسود أو أبيض حسب التباين
       if(color.startsWith('#')){
         const rgb = hexToRgb(color);
         const L = relativeLuminance(rgb);
         return (L > 0.35) ? '#000' : '#fff';
       }
-      // fallback للأسماء: نفترض فاتح؟ نخلي نص داكن لو كان اللون من الألوان الفاتحة الشائعة
       const lightNames = ['yellow','gold','khaki','lightyellow','lemonchiffon','lightgoldenrodyellow','papayawhip','moccasin'];
       return lightNames.includes(color.toLowerCase()) ? '#000' : '#fff';
     }
@@ -141,28 +147,27 @@
       return `SH-${y}${m}${day}-${rand}`;
     }
 
-    // ---------- تحميل البيانات ----------
+    /* ===== قراءة بيانات الطلب من sessionStorage ===== */
     const summary = sessionStorage.getItem('orderSummary') || '—';
     const dataRaw = sessionStorage.getItem('orderData');
     const data = dataRaw ? JSON.parse(dataRaw) : null;
 
-    // رقم الطلب: خزّنه إن ما كان موجود
+    /* ===== رقم الطلب (توليد + حفظ) ===== */
     let orderId = sessionStorage.getItem('orderId');
     if(!orderId){ orderId = generateOrderId(); sessionStorage.setItem('orderId', orderId); }
 
-    // عرض رقم الطلب
     document.getElementById('orderId').textContent = orderId;
     document.getElementById('orderIdMirror').textContent = orderId;
 
-    // عرض الملخص (مع تضمين رقم الطلب في أعلى النص)
+    /* ===== الملخّص النصّي (مع إدراج رقم الطلب أعلى النص) ===== */
     const summaryBox = document.getElementById('summaryBox');
     const summaryWithId = `رقم الطلب: ${orderId}\n\n${summary}`;
     summaryBox.textContent = summaryWithId;
 
-    // شبكة التفاصيل
+    /* ===== شبكة التفاصيل ===== */
     const grid = document.getElementById('detailsGrid');
     const labels = {
-      orderId:'رقم الطلب', // أضفناه هنا
+      orderId:'رقم الطلب',
       fullName:'الاسم الكامل', phone:'الهاتف/واتساب', email:'البريد الإلكتروني',
       business:'اسم النشاط', industry:'القطاع', currentSite:'موقع حالي',
       siteType:'نوع الموقع', features:'ميزات مطلوبة', stylePref:'ستايل التصميم',
@@ -170,21 +175,17 @@
       ref1:'موقع يعجبك (1)', ref2:'موقع يعجبك (2)',
       contactTime:'وقت التواصل', contactPref:'طريقة التواصل', notes:'ملاحظات'
     };
-
     function addRow(key, value){
       const wrap = document.createElement('div'); wrap.className='row';
       const k = document.createElement('div'); k.className='key'; k.textContent = key;
       const v = document.createElement('div'); v.className='val'; v.textContent = value;
       wrap.appendChild(k); wrap.appendChild(v); grid.appendChild(wrap);
     }
-
     let entries = [];
-    // أدخل رقم الطلب أولاً
     entries.push(['رقم الطلب', orderId]);
-
     if(data){
       const mapped = Object.entries(labels)
-        .filter(([k]) => k!=='orderId') // تجنّب التكرار
+        .filter(([k]) => k!=='orderId')
         .map(([k,lab]) => [lab, (k==='features' && Array.isArray(data[k])) ? data[k].join('، ') : (data[k]||'—')])
         .filter(([,val]) => String(val).trim() !== '');
       entries = entries.concat(mapped);
@@ -195,7 +196,7 @@
       grid.hidden = false;
     }
 
-    // أزرار النسخ/الطباعة/التنزيل
+    /* ===== أزرار: نسخ/طباعة/تنزيل ===== */
     document.getElementById('copyBtn').addEventListener('click', async ()=>{
       try{ await navigator.clipboard.writeText(summaryWithId); alert('تم نسخ الملخّص ✅'); }
       catch{ alert('تعذّر النسخ التلقائي. انسخ يدويًا.'); }
@@ -209,15 +210,12 @@
       setTimeout(()=>URL.revokeObjectURL(url), 500);
     });
 
-    // ---------- تلوين لوحة الشكر حسب brandColor ----------
+    /* ===== تلوين لوحة الشكر حسب brandColor ===== */
     const thanksPanel = document.getElementById('thanksPanel');
     const brand = sanitizeColor(data?.brandColor);
     const accent = brand || getComputedStyle(document.documentElement).getPropertyValue('--blue').trim();
     document.documentElement.style.setProperty('--accent', accent);
-
-    // حدد لون النص حسب التباين
     const textColor = accent.startsWith('#') ? getContrastText(accent) : '#fff';
-    // خلفية متدرجة خفيفة فوق لون البطاقة
     const overlay1 = accent.startsWith('#') ? toRgbaStr(accent, 0.25) : 'rgba(64,179,255,0.20)';
     const overlay2 = accent.startsWith('#') ? toRgbaStr(accent, 0.45) : 'rgba(10,132,255,0.35)';
     thanksPanel.style.background = `linear-gradient(135deg, ${overlay1}, ${overlay2}), var(--card)`;
@@ -225,6 +223,33 @@
     thanksPanel.style.color = textColor;
     document.getElementById('thanksText').style.color = textColor;
 
+    /* ===== روابط واتساب + إيميل (تحتوي رقم الطلب والملخّص) ===== */
+    const businessPhone = '962790986908'; // عدّل الرقم بدون +
+    const orderShort = (summary || '').split('\n').slice(0,6).join('\n');
+    const waMsg = `مرحبًا،\nأرسل لكم تفاصيل طلبي.\n${summaryWithId}\n\n— مقتطف —\n${orderShort}`;
+    const waLink = `https://wa.me/${businessPhone}?text=${encodeURIComponent(waMsg)}`;
+    document.getElementById('whBtn').href = waLink;
+
+    const mailTo = (data?.email && String(data.email).trim()) || '';
+    const subject = `طلب جديد — ${orderId}`;
+    const body = `مرحبًا،\n\nتفاصيل الطلب:\n${summaryWithId}\n\nشكرًا.`;
+    const mailLink = `mailto:${mailTo}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    document.getElementById('mailBtn').href = mailLink;
+
+    /* ===== توليد رابط التتبّع + QR ===== */
+    const trackUrl = `${location.origin}${location.pathname.replace(/[^/]+$/,'')}track.html?id=${encodeURIComponent(orderId)}`;
+    document.getElementById('trackLink').href = trackUrl;
+    try{
+      document.getElementById('qrcode').textContent = '';
+      new QRCode(document.getElementById("qrcode"), {
+        text: trackUrl,
+        width: 128,
+        height: 128,
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }catch(e){
+      document.getElementById('qrcode').textContent = 'QR غير متاح';
+    }
   </script>
 </body>
 </html>
