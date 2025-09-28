@@ -125,7 +125,7 @@
     </section>
   </main>
 
-  <!-- بوابة PIN بسيطة -->
+  <!-- بوابة PIN -->
   <section class="gate" id="gate">
     <div class="panel">
       <h2 style="margin:0 0 8px">دخول لوحة الإدارة</h2>
@@ -135,7 +135,7 @@
         <input id="pin" type="password" inputmode="text" autocomplete="off" placeholder="••••••••" dir="ltr">
         <button class="btn" id="enterBtn">دخول</button>
       </div>
-      <small class="muted">هذا قفل واجهة فقط؛ التحقق الفعلي عبر التوكن.</small>
+      <small class="muted">هذا قفل واجهة فقط؛ التحقق الفعلي عبر التوكن في الطلب.</small>
     </div>
   </section>
 
@@ -143,10 +143,10 @@
 
   <script>
     // === إعدادات Web App ===
-    const WEB_APP_URL   = 'https://script.google.com/macros/s/AKfycbzSlgjTUNjtnR-jyG1w7Et6Ix3kiTLUHeb3FU13EapmQ6AgYVL1vZFC5zDpis-6u469vw/exec';
+    const WEB_APP_URL   = 'https://script.google.com/macros/s/AKfycbyVv4C5YxYL2ifgTp8YKQOKw72PHniz3E13KUvCdoR36akfUmXE6aCSV-QbnwdGhkR-9w/exec';
     const WEB_APP_TOKEN = 'Mohamad&03';
 
-    // أدوات
+    // أدوات صغيرة
     const $ = id => document.getElementById(id);
     const toast = $('toast'); let tTimer;
     function notify(msg){ toast.textContent=msg; toast.classList.add('show'); clearTimeout(tTimer); tTimer=setTimeout(()=>toast.classList.remove('show'),2200); }
@@ -161,18 +161,16 @@
       sessionStorage.setItem(GATE_KEY, v); openApp(); prefillAndAutoload();
     });
     if(sessionStorage.getItem(GATE_KEY) === WEB_APP_TOKEN){ openApp(); }
-
-    // إدخال Enter
     $('pin').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ $('enterBtn').click(); } });
     $('orderId').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ $('loadBtn').click(); } });
 
-    // رابط تتبع
+    // رابط تتبّع
     function trackUrl(oid){
       const base = location.pathname.replace(/[^/]+$/, '');
       return `${location.origin}${base}track.html?id=${encodeURIComponent(oid)}`;
     }
 
-    // JSONP helper (بدون CORS)
+    // JSONP helper (لـ CORS)
     function jsonp(url){
       return new Promise((resolve,reject)=>{
         const cb = '__cb_' + Math.random().toString(36).slice(2);
@@ -210,7 +208,7 @@
       }
     }
 
-    // UPSERT — حاول POST x-www-form-urlencoded، ولو فشل استخدم JSONP GET
+    // UPSERT — POST أولًا، ولو فشل استخدم JSONP GET
     async function apiUpsert(payload){
       const body = new URLSearchParams(payload).toString();
       try{
@@ -287,23 +285,19 @@
     // أزرار متنوعة
     $('loadBtn').addEventListener('click', loadOrder);
     $('saveBtn').addEventListener('click', saveOrder);
-
     $('copyIdBtn').addEventListener('click', async ()=>{
       const oid = $('orderId').value.trim(); if(!oid){ notify('لا يوجد رقم'); return; }
       try{ await navigator.clipboard.writeText(oid); notify('نُسخ الرقم'); }catch{ notify('تعذّر النسخ'); }
     });
-
     $('copyTrack').addEventListener('click', async ()=>{
       const oid = $('orderId').value.trim(); if(!oid){ notify('لا يوجد رقم'); return; }
       try{ await navigator.clipboard.writeText(trackUrl(oid)); notify('نُسخ رابط التتبّع'); }catch{ notify('تعذّر النسخ'); }
     });
-
     $('openTrack').addEventListener('click', (e)=>{
       const oid = $('orderId').value.trim();
       if(!oid){ e.preventDefault(); notify('أدخل الرقم'); }
       else{ $('openTrack').href = trackUrl(oid); }
     });
-
     $('refreshBtn').addEventListener('click', loadOrder);
 
     // رسالة واتساب
