@@ -24,7 +24,7 @@
     .panel{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px}
     h1{margin:0 0 10px; font-size:clamp(24px,4vw,34px)}
     p{color:var(--muted)}
-    .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:14px}
+    .steps{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-top:14px}
     .step{padding:12px; border:1px dashed var(--border); border-radius:12px; background:rgba(255,255,255,.03); text-align:center}
     .step.active{border-style:solid; background:color-mix(in oklab, var(--accent) 14%, transparent)}
     .step.cancel{border-style:solid; background:linear-gradient(180deg, rgba(239,68,68,.12), transparent)}
@@ -57,11 +57,13 @@
       <p id="state">جاري جلب حالة الطلب…</p>
       <div class="muted" id="updated" style="margin:-6px 0 8px"></div>
 
+      <!-- 5 خطوات: استلام، مراجعة، عرض سعر، بدأ التنفيذ، اكتمل -->
       <div class="steps" id="steps" hidden>
         <div class="step" data-step="1">📥 تم استلام الطلب</div>
         <div class="step" data-step="2">🔍 تحت المراجعة</div>
         <div class="step" data-step="3">📝 تم إرسال عرض السعر</div>
-        <div class="step" data-step="4">🚀 بدأ التنفيذ / اكتمل</div>
+        <div class="step" data-step="4">🚀 بدأ التنفيذ</div>
+        <div class="step" data-step="5">🎉 اكتمل الطلب</div>
       </div>
 
       <div class="btns">
@@ -75,7 +77,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // === نفس ويب آب لوحة الإدارة (عدّل هنا فقط إن كان عندك رابط أحدث) ===
+    // استخدم نفس ويب آب لوحة الإدارة (بدّل إن لزم)
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyVv4C5YxYL2ifgTp8YKQOKw72PHniz3E13KUvCdoR36akfUmXE6aCSV-QbnwdGhkR-9w/exec';
 
     // Toast
@@ -114,13 +116,13 @@
       });
     }
 
-    // خريطة الحالات
+    // خريطة الحالات (5 خطوات)
     const STATUS_MAP = {
       received: {text:'تم استلام الطلب ✅', step:1},
       reviewing:{text:'طلبك تحت المراجعة 🔍', step:2},
       quoted:   {text:'تم إرسال عرض السعر 📝', step:3},
       started:  {text:'بدأ التنفيذ 🚀',       step:4},
-      done:     {text:'اكتمل الطلب 🎉',       step:4},
+      done:     {text:'اكتمل الطلب 🎉',       step:5},
       cancelled:{text:'تم إلغاء الطلب ❌',    step:0} // 0 = مميز كإلغاء
     };
 
@@ -136,7 +138,6 @@
       const o = data.order || {};
       const st = STATUS_MAP[String(o.status||'received')] || STATUS_MAP.received;
 
-      // نص الحالة
       stateEl.textContent = st.text;
 
       // آخر تحديث
@@ -149,7 +150,7 @@
         el.classList.remove('active','cancel');
         const s = Number(el.dataset.step);
         if(st.step === 0){ // إلغاء
-          if (s === 1) el.classList.add('cancel'); // أبرز أول خطوة بلون إلغاء
+          if (s === 1) el.classList.add('cancel');
         }else{
           if(s <= st.step){ el.classList.add('active'); }
         }
