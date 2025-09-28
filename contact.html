@@ -17,25 +17,21 @@
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:16px; --max:1100px;
     }
-
-    /* أساسيات ومنع أي سكرول أفقي */
-    *,*::before,*::after{ box-sizing:border-box }
-    html, body { width:100%; margin:0; padding:0; overflow-x:hidden; }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{
-      font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
       background:
         radial-gradient(1200px 800px at 80% -100px, rgba(64,179,255,.12), transparent 60%),
         linear-gradient(180deg, #1b1b1b, var(--bg));
       color:var(--text); line-height:1.7;
     }
-    a{ color:var(--blue); text-decoration:none }
-    img,video,canvas{ max-width:100%; height:auto; display:block }
+    a{color:var(--blue); text-decoration:none}
+    img{max-width:100%; height:auto; display:block}
 
-    /* Header — نفس index */
+    /* Header — مطابق للـ index */
     header{
-      position:sticky; top:0;
-      -webkit-backdrop-filter:saturate(1.2) blur(8px);
-      backdrop-filter:saturate(1.2) blur(8px);
+      position:sticky; top:0; backdrop-filter:saturate(1.2) blur(8px);
       background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.0));
       border-bottom:1px solid rgba(255,255,255,.08);
       z-index:40; box-shadow:0 6px 20px rgba(0,0,0,.25);
@@ -44,63 +40,53 @@
     .logo{display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.3px; color:var(--text)}
     .logo-img{height:52px; width:auto; border-radius:10px; box-shadow:var(--shadow)}
     .nav-gap{margin-inline-start:auto}
+
     .btn{
       display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px;
       background:linear-gradient(135deg,var(--blue),var(--blue-2)); color:#fff; font-weight:700;
       box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .2s ease; border:0; cursor:pointer;
-      text-align:center; min-width:0; white-space:normal;
+      text-align:center;
     }
     .btn:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(10,132,255,.25)}
     .btn-outline{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.16)}
     .btn-whatsapp{background:linear-gradient(135deg,var(--whatsapp),var(--whatsapp-2)); color:#fff}
     .btn-ig{background:linear-gradient(135deg,var(--ig4),var(--ig3),var(--ig2),var(--ig1)); color:#fff}
 
-    .wrap{max-width:var(--max); width:100%; margin-inline:auto; padding:28px 20px}
+    .wrap{max-width:var(--max); margin:auto; padding:28px 20px}
 
-    /* Hero — نقطتنا الحسّاسة */
-    .hero{
-      display:grid;
-      grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); /* يمنع أي تمدّد */
-      gap:28px; align-items:center; padding-block:32px;
-      max-width:100%;
-    }
-    .hero > *{ min-width:0; max-width:100% }
-
+    /* Hero — مثل index */
+    .hero{display:grid; grid-template-columns:1.1fr .9fr; gap:28px; align-items:center; padding-block:32px}
+    .hero > *{min-width:0}
     .title{font-size:clamp(30px, 4vw, 46px); line-height:1.2; margin:0 0 10px; font-weight:800}
     .subtitle{color:var(--muted); font-size:clamp(16px,2.3vw,18px); margin:0 0 20px}
-    .badge{
-      display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
+    .badge{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
       background:rgba(10,132,255,.12); color:var(--blue); font-weight:700; margin-bottom:14px;
-      border:1px solid rgba(64,179,255,.25)
-    }
+      border:1px solid rgba(64,179,255,.25)}
 
-    .panel{
-      background:var(--card); border:1px solid rgba(255,255,255,.06);
-      border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);
-      max-width:100%;
-    }
+    .panel{background:var(--card); border:1px solid rgba(255,255,255,.06);
+      border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
 
-    .grid-2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; max-width:100%}
-    .grid-3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; max-width:100%}
+    .grid-2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
+    .grid-3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px}
 
     label{font-weight:700; margin-bottom:6px; display:block}
     input, select, textarea{
       width:100%; min-width:0; padding:12px 12px; border-radius:12px; background:#1f1f1f;
       border:1px solid rgba(255,255,255,.08); color:var(--text); font:inherit; outline:none;
-      transition:border-color .15s ease, box-shadow .15s ease; font-size:16px;
+      transition:border-color .15s ease, box-shadow .15s ease;
+      font-size:16px; /* يمنع الزووم على اللمس بالموبايل */
     }
     input:focus, select:focus, textarea:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(10,132,255,.15)}
     .hint{color:var(--muted); font-size:13px; margin-top:6px}
 
-    .choices{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; max-width:100% }
+    .choices{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
     .choices label{
       font-weight:600; display:flex; align-items:center; gap:10px; line-height:1.6;
       padding:10px 12px; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.02);
-      min-width:0;
     }
-    .choices input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--blue); }
+    .choices input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--blue) }
 
-    .actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-start; margin-top:14px; max-width:100%}
+    .actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-start; margin-top:14px}
 
     .estimator{display:flex; align-items:center; justify-content:space-between; gap:14px}
     .estimate-pill{
@@ -120,6 +106,14 @@
     .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
     .reveal.show{opacity:1; transform:none}
 
+    /* إخفاء HoneyPot بدون تمديد العرض */
+    #siteForm{ position:relative }
+    .hp-trap{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%);
+      border:0; white-space:nowrap; opacity:0;
+    }
+
     /* نفس breakpoint تبع index */
     @media (max-width:900px){
       .hero{grid-template-columns:1fr; gap:18px}
@@ -136,7 +130,7 @@
         <span>Shlool <span style="color:var(--blue)">Web</span></span>
       </div>
       <div class="nav-gap"></div>
-      <a class="btn btn-outline" href="index.html">العودة للرئيسية</a>
+      <a class="btn btn-outline" href="index.html" aria-label="العودة للرئيسية">العودة للرئيسية</a>
     </nav>
   </header>
 
@@ -170,8 +164,10 @@
       <p class="hint">الحقول المعلَّمة بـ (*) مطلوبة. الإرسال يتم عبر واتساب أو بريد — بدون أي باك-إند.</p>
 
       <form id="siteForm" novalidate>
-        <input id="hp" name="website" type="text" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
+        <!-- HoneyPot (مخفي بدون left:-9999px) -->
+        <input id="hp" class="hp-trap" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
 
+        <!-- معلومات أساسية -->
         <div class="grid-3">
           <div>
             <label for="fullName">الاسم الكامل *</label>
@@ -211,6 +207,7 @@
           </div>
         </div>
 
+        <!-- نوع الموقع المطلوب -->
         <div style="margin-top:16px">
           <label for="siteType">نوع الموقع الذي تريده *</label>
           <select id="siteType" required>
@@ -226,6 +223,7 @@
           <p class="hint">سنضبط التصميم والمحتوى حسب النوع المختار.</p>
         </div>
 
+        <!-- ميزات مطلوبة -->
         <div style="margin-top:10px">
           <label>الميزات المطلوبة (اختَر ما يلزم)</label>
           <div class="choices" id="featureChoices">
@@ -244,6 +242,7 @@
           </div>
         </div>
 
+        <!-- الباقة المقترحة -->
         <div class="panel estimator reveal" id="estimator" style="margin-top:12px">
           <div>
             <strong>الباقة المقترحة:</strong>
@@ -256,6 +255,7 @@
           </div>
         </div>
 
+        <!-- تفضيلات تصميم وهوية -->
         <div class="grid-3" style="margin-top:16px">
           <div>
             <label for="brandColor">اللون الأساسي المفضّل</label>
@@ -277,6 +277,7 @@
           </div>
         </div>
 
+        <!-- مواقع مرجعية + وقت التواصل -->
         <div class="grid-2" style="margin-top:12px">
           <div>
             <label for="ref1">موقع يعجبك (1)</label>
@@ -304,11 +305,13 @@
           </div>
         </div>
 
+        <!-- ملاحظات -->
         <div style="margin-top:16px">
           <label for="notes">ملاحظات إضافية</label>
           <textarea id="notes" rows="6" placeholder="اكتب أي تفاصيل إضافية ترغب بها: أقسام مطلوبة، ألوان، لغة ثانية، وغير ذلك…"></textarea>
         </div>
 
+        <!-- سياسة خصوصية -->
         <div class="actions" style="margin-top:6px">
           <label class="agree">
             <input id="agree" type="checkbox" required>
@@ -316,6 +319,7 @@
           </label>
         </div>
 
+        <!-- إرسال -->
         <div class="actions">
           <button type="submit" class="btn btn-whatsapp"><span>إرسال عبر واتساب</span></button>
           <button type="button" id="sendEmail" class="btn btn-outline">إرسال عبر الإيميل</button>
@@ -337,12 +341,14 @@
   </footer>
 
   <script>
+    // ظهور ناعم (مثل index)
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } });
     },{threshold:.08});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
     const $ = id => document.getElementById(id);
+
     function getSelectedFeatures(){
       return Array.from(document.querySelectorAll('#featureChoices input:checked')).map(c=>c.value);
     }
@@ -350,7 +356,7 @@
       const f = getSelectedFeatures();
       let plan='الأساسية', price='70 د.أ', reason='موقع تعريفي وميزات أساسية.';
       if (f.includes('دفع أونلاين')) { plan='المتقدمة'; price='270 د.أ'; reason='يتضمن دفع أونلاين وتكاملات.'; }
-      else {
+      else{
         const group=['منيو أونلاين وQR','حجز مواعيد إلى الإيميل','طلبات أونلاين بسيطة','معرض صور/أعمال','مدونة/مقالات','تعدد اللغات','تأمين دومين واستضافة'];
         const count=f.filter(x=>group.includes(x)).length;
         if (count>=2){ plan='برو'; price='170 د.أ'; reason=`اخترت ${count} ميزات متقدمة.`; }
@@ -359,7 +365,9 @@
     }
     function updateEstimator(){
       const r=getRecommendation();
-      $('recName').textContent=r.plan; $('recPrice').textContent=r.price; $('recReason').textContent=r.reason;
+      $('recName').textContent=r.plan;
+      $('recPrice').textContent=r.price;
+      $('recReason').textContent=r.reason;
     }
     document.querySelectorAll('#featureChoices input, #siteType').forEach(el=> el.addEventListener('change', updateEstimator));
     updateEstimator();
@@ -417,7 +425,9 @@
           el.addEventListener('input',()=> el.style.borderColor='rgba(255,255,255,.08)',{once:true});
         }
       });
-      if(document.getElementById('hp').value.trim()){ ok=false; alert('تم إيقاف الإرسال (مرشح سبام).'); }
+      if(document.getElementById('hp').value.trim()){
+        ok=false; alert('تم إيقاف الإرسال (مرشح سبام).');
+      }
       return ok;
     }
 
