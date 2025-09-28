@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>اطلب موقعك — Shlool Web</title>
   <meta name="description" content="اطلب موقعك الآن: اختر الميزات والمدة. نرجع لك بعرض خلال وقت قصير.">
+  <meta name="color-scheme" content="dark light">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
@@ -17,22 +18,18 @@
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:16px; --max:1100px;
     }
-
-    /* أساسيات + منع أي تمدد أفقي */
-    *,*::before,*::after{box-sizing:border-box}
+    *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    html,body{width:100%;margin:0;padding:0;overflow-x:hidden}
     body{
-      font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
       background:
         radial-gradient(1200px 800px at 80% -100px, rgba(64,179,255,.12), transparent 60%),
         linear-gradient(180deg, #1b1b1b, var(--bg));
-      color:var(--text); line-height:1.7;
+      color:var(--text); line-height:1.7; color-scheme:dark;
     }
     a{color:var(--blue); text-decoration:none}
     img{max-width:100%; height:auto; display:block}
 
-    /* Header — مطابق للـ index */
     header{
       position:sticky; top:0; backdrop-filter:saturate(1.2) blur(8px);
       background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.0));
@@ -47,8 +44,7 @@
     .btn{
       display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px;
       background:linear-gradient(135deg,var(--blue),var(--blue-2)); color:#fff; font-weight:700;
-      box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .2s ease; border:0; cursor:pointer;
-      text-align:center; min-width:0; white-space:normal;
+      box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .2s ease; border:0; cursor:pointer; text-align:center;
     }
     .btn:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(10,132,255,.25)}
     .btn-outline{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.16)}
@@ -56,28 +52,20 @@
     .btn-ig{background:linear-gradient(135deg,var(--ig4),var(--ig3),var(--ig2),var(--ig1)); color:#fff}
 
     .wrap{max-width:var(--max); margin:auto; padding:28px 20px}
-
-    /* Hero */
-    .hero{
-      display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
-      gap:28px; align-items:center; padding-block:32px;
-    }
+    .hero{display:grid; grid-template-columns:1.1fr .9fr; gap:28px; align-items:center; padding-block:32px}
     .hero > *{min-width:0}
-
     .title{font-size:clamp(30px, 4vw, 46px); line-height:1.2; margin:0 0 10px; font-weight:800}
     .subtitle{color:var(--muted); font-size:clamp(16px,2.3vw,18px); margin:0 0 20px}
     .badge{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
       background:rgba(10,132,255,.12); color:var(--blue); font-weight:700; margin-bottom:14px;
       border:1px solid rgba(64,179,255,.25)}
-
     .panel{background:var(--card); border:1px solid rgba(255,255,255,.06);
       border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
-
     .grid-2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
     .grid-3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px}
-
-    /* الحقول: استثنينا checkbox/radio من العرض 100% */
     label{font-weight:700; margin-bottom:6px; display:block}
+
+    /* استثناء checkbox/radio من عرض 100% */
     input:not([type="checkbox"]):not([type="radio"]), select, textarea{
       width:100%; min-width:0; padding:12px 12px; border-radius:12px; background:#1f1f1f;
       border:1px solid rgba(255,255,255,.08); color:var(--text); font:inherit; outline:none;
@@ -86,50 +74,58 @@
     input:focus, select:focus, textarea:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(10,132,255,.15)}
     .hint{color:var(--muted); font-size:13px; margin-top:6px}
 
-    /* Checkboxes داخل القوائم */
     .choices{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-    .choices label{ font-weight:600; display:flex; align-items:center; gap:10px; line-height:1.6;
-      padding:10px 12px; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.02); }
+    .choices label{
+      font-weight:600; display:flex; align-items:center; gap:10px; line-height:1.6;
+      padding:10px 12px; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.02);
+    }
     .choices input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--blue) }
 
-    /* Checkbox الموافقة — حل مشكلة المحاذاة */
-    .agree{ display:flex; align-items:center; gap:10px; margin:0 }
-    .agree input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--blue); flex:0 0 18px; }
-    .agree span{ font-weight:800 }
-
     .actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-start; margin-top:14px}
-
-    /* Estimator */
     .estimator{display:flex; align-items:center; justify-content:space-between; gap:14px}
-    .estimate-pill{padding:8px 12px; border-radius:999px; background:rgba(10,132,255,.12);
-      border:1px solid rgba(64,179,255,.25); color:#fff; font-weight:800}
+    .estimate-pill{ padding:8px 12px; border-radius:999px; background:rgba(10,132,255,.12);
+      border:1px solid rgba(64,179,255,.25); color:#fff; font-weight:800 }
     .small{color:var(--muted); font-size:13px}
 
-    /* Footer */
     footer{ background:var(--surface); border-top:1px solid rgba(255,255,255,.08);
       box-shadow:0 -6px 20px rgba(0,0,0,.25); margin-top:40px; }
     .footer-inner{max-width:var(--max); margin:auto; padding:22px 20px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-    .brand{opacity:.7} .dev{font-weight:800}
+    .brand{opacity:.7}
+    .dev{font-weight:800}
 
-    /* Reveal */
     .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
     .reveal.show{opacity:1; transform:none}
 
-    /* HoneyPot آمن بصريًا (بدون left:-9999px) */
-    #siteForm{ position:relative }
-    .visually-hidden{
-      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
-      overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);
-      border:0;white-space:nowrap;opacity:0;
+    @media (prefers-reduced-motion: reduce){
+      html{scroll-behavior:auto}
+      .reveal{transition:none}
     }
 
-    /* موبايل */
+    /* HoneyPot */
+    #siteForm{ position:relative }
+    .hp-trap{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%);
+      border:0; white-space:nowrap; opacity:0;
+    }
+
+    /* الموافقة */
+    .agree{ display:flex; align-items:center; gap:8px; font-weight:600 }
+    .agree input[type="checkbox"]{ width:auto; height:auto; margin:0 }
+
+    /* تمييز الحقول غير الصحيحة */
+    .invalid{ border-color:#ff6b6b !important; box-shadow:0 0 0 3px rgba(255,107,107,.15) }
+
     @media (max-width:900px){
       .hero{grid-template-columns:1fr; gap:18px}
       .grid-2,.grid-3{grid-template-columns:1fr}
       .choices{grid-template-columns:1fr}
     }
   </style>
+
+  <!-- reCAPTCHA v2 Invisible (اختياري) — فعّل السطرين تحت واستبدل YOUR_SITE_KEY -->
+  <!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
+  <!-- <meta name="recaptcha-sitekey" content="YOUR_SITE_KEY"> -->
 </head>
 <body>
   <header>
@@ -139,7 +135,7 @@
         <span>Shlool <span style="color:var(--blue)">Web</span></span>
       </div>
       <div class="nav-gap"></div>
-      <a class="btn btn-outline" href="index.html" aria-label="العودة للرئيسية">العودة للرئيسية</a>
+      <a class="btn btn-outline" href="index.html" aria-label="العودة للرئيسية" rel="noopener">العودة للرئيسية</a>
     </nav>
   </header>
 
@@ -156,7 +152,8 @@
         </div>
       </div>
 
-      <div class="panel reveal">
+      <!-- شلنا reveal عشان ما تختفي -->
+      <div class="panel">
         <h3 style="margin:0 0 10px">ليش معنا؟</h3>
         <ul style="margin:0; padding-inline-start:18px; color:var(--muted)">
           <li>تسليم خلال أقل من أسبوع للمواقع الصغيرة.</li>
@@ -170,36 +167,37 @@
     <!-- نموذج طلب موقع -->
     <section class="panel reveal" aria-label="طلب موقع">
       <h2 style="margin-top:0">نموذج طلب موقع</h2>
-      <p class="hint">الحقول المعلَّمة بـ (*) مطلوبة. الإرسال يتم عبر واتساب أو بريد — بدون أي باك-إند.</p>
+      <p class="hint" id="reqHint">الحقول المعلَّمة بـ (*) مطلوبة. الإرسال يتم عبر واتساب أو بريد — بدون أي باك-إند.</p>
 
-      <form id="siteForm" novalidate>
-        <!-- HoneyPot المخفي بشكل سليم -->
-        <input id="hp" class="visually-hidden" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <form id="siteForm" novalidate autocomplete="on">
+        <!-- HoneyPot -->
+        <input id="hp" class="hp-trap" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
 
         <!-- معلومات أساسية -->
         <div class="grid-3">
           <div>
             <label for="fullName">الاسم الكامل *</label>
-            <input id="fullName" required placeholder="مثال: محمد الشلول">
+            <input id="fullName" name="fullName" required placeholder="مثال: محمد الشلول" autocomplete="name">
           </div>
           <div>
             <label for="phone">الهاتف / واتساب *</label>
-            <input id="phone" required placeholder="مثال: 0790 986 908">
+            <input id="phone" name="phone" required placeholder="07X XXX XXXX" inputmode="tel" autocomplete="tel" dir="ltr">
+            <p class="hint">أدخل رقم أردني بصيغة 07X XXX XXXX (077/078/079).</p>
           </div>
           <div>
             <label for="email">البريد الإلكتروني *</label>
-            <input id="email" type="email" required placeholder="example@email.com">
+            <input id="email" name="email" type="email" required placeholder="example@email.com" autocomplete="email" dir="ltr">
           </div>
         </div>
 
         <div class="grid-3" style="margin-top:12px">
           <div>
             <label for="business">اسم النشاط (اختياري)</label>
-            <input id="business" placeholder="مثال: Falafel House">
+            <input id="business" name="business" placeholder="مثال: Falafel House" autocomplete="organization">
           </div>
           <div>
             <label for="industry">القطاع</label>
-            <select id="industry">
+            <select id="industry" name="industry">
               <option value="">اختر…</option>
               <option>مطاعم وكافيهات</option>
               <option>عيادات ومراكز طبية</option>
@@ -212,14 +210,14 @@
           </div>
           <div>
             <label for="currentSite">موقع حالي (إن وجد)</label>
-            <input id="currentSite" type="url" placeholder="https://example.com">
+            <input id="currentSite" name="currentSite" type="url" placeholder="https://example.com" dir="ltr" inputmode="url" autocomplete="url">
           </div>
         </div>
 
         <!-- نوع الموقع المطلوب -->
         <div style="margin-top:16px">
           <label for="siteType">نوع الموقع الذي تريده *</label>
-          <select id="siteType" required>
+          <select id="siteType" name="siteType" required aria-describedby="reqHint">
             <option value="">اختر نوع الموقع…</option>
             <option>موقع مطعم (منيو + QR)</option>
             <option>موقع عيادة (حجز مواعيد)</option>
@@ -252,7 +250,7 @@
         </div>
 
         <!-- الباقة المقترحة -->
-        <div class="panel estimator reveal" id="estimator" style="margin-top:12px">
+        <div class="panel estimator reveal" id="estimator" style="margin-top:12px" aria-live="polite">
           <div>
             <strong>الباقة المقترحة:</strong>
             <span id="recName" class="estimate-pill">—</span>
@@ -268,11 +266,11 @@
         <div class="grid-3" style="margin-top:16px">
           <div>
             <label for="brandColor">اللون الأساسي المفضّل</label>
-            <input id="brandColor" type="color" value="#0a84ff" style="height:44px;padding:4px">
+            <input id="brandColor" name="brandColor" type="color" value="#0a84ff" style="height:44px;padding:4px">
           </div>
           <div>
             <label for="stylePref">ستايل التصميم</label>
-            <select id="stylePref">
+            <select id="stylePref" name="stylePref">
               <option value="">اختر…</option>
               <option>مودرن وبسيط</option>
               <option>كلاسيك/رسمي</option>
@@ -282,7 +280,7 @@
           </div>
           <div>
             <label for="assetsLink">رابط ملفات المحتوى</label>
-            <input id="assetsLink" type="url" placeholder="Drive / Dropbox link">
+            <input id="assetsLink" name="assetsLink" type="url" placeholder="Drive / Dropbox link" dir="ltr" inputmode="url" autocomplete="url">
           </div>
         </div>
 
@@ -290,22 +288,22 @@
         <div class="grid-2" style="margin-top:12px">
           <div>
             <label for="ref1">موقع يعجبك (1)</label>
-            <input id="ref1" type="url" placeholder="https://…">
+            <input id="ref1" name="ref1" type="url" placeholder="https://…" dir="ltr" inputmode="url" autocomplete="url">
           </div>
           <div>
             <label for="ref2">موقع يعجبك (2)</label>
-            <input id="ref2" type="url" placeholder="https://…">
+            <input id="ref2" name="ref2" type="url" placeholder="https://…" dir="ltr" inputmode="url" autocomplete="url">
           </div>
         </div>
 
         <div class="grid-2" style="margin-top:12px">
           <div>
             <label for="contactTime">وقت التواصل المفضّل</label>
-            <input id="contactTime" type="text" placeholder="مثال: 5–8 مساءً">
+            <input id="contactTime" name="contactTime" type="text" placeholder="مثال: 5–8 مساءً" autocomplete="off">
           </div>
           <div>
             <label for="contactPref">طريقة التواصل المفضلة</label>
-            <select id="contactPref">
+            <select id="contactPref" name="contactPref">
               <option value="">اختر…</option>
               <option>واتساب</option>
               <option>اتصال هاتفي</option>
@@ -314,18 +312,18 @@
           </div>
         </div>
 
-        <!-- سياسة خصوصية -->
-        <div class="actions" style="margin-top:6px">
-          <label class="agree">
-            <input id="agree" type="checkbox" required>
-            <span>أوافق على سياسة الخصوصية واستخدام بيانات التواصل للرد على الطلب.</span>
-          </label>
-        </div>
-
         <!-- ملاحظات -->
         <div style="margin-top:16px">
           <label for="notes">ملاحظات إضافية</label>
-          <textarea id="notes" rows="6" placeholder="اكتب أي تفاصيل إضافية ترغب بها: أقسام مطلوبة، ألوان، لغة ثانية، وغير ذلك…"></textarea>
+          <textarea id="notes" name="notes" rows="6" placeholder="اكتب أي تفاصيل إضافية ترغب بها: أقسام مطلوبة، ألوان، لغة ثانية، وغير ذلك…" dir="auto"></textarea>
+        </div>
+
+        <!-- سياسة خصوصية -->
+        <div class="actions" style="margin-top:6px">
+          <label class="agree">
+            <input id="agree" name="agree" type="checkbox" required>
+            <span>أوافق على سياسة الخصوصية واستخدام بيانات التواصل للرد على الطلب.</span>
+          </label>
         </div>
 
         <!-- إرسال -->
@@ -333,6 +331,7 @@
           <button type="submit" class="btn btn-whatsapp"><span>إرسال عبر واتساب</span></button>
           <button type="button" id="sendEmail" class="btn btn-outline">إرسال عبر الإيميل</button>
           <button type="button" id="copySummary" class="btn btn-outline">نسخ الطلب</button>
+          <button type="button" id="clearForm" class="btn btn-outline" title="مسح الحقول">تنظيف</button>
           <a class="btn btn-outline" href="index.html">رجوع للرئيسية</a>
         </div>
       </form>
@@ -350,26 +349,24 @@
   </footer>
 
   <script>
-    // Reveal
+    // ظهور ناعم
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } });
     },{threshold:.08});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-    /* ===== منطق النموذج ===== */
     const $ = id => document.getElementById(id);
 
-    function getSelectedFeatures(){
-      return Array.from(document.querySelectorAll('#featureChoices input:checked')).map(c=>c.value);
-    }
+    // ميزات + توصية
+    function getSelectedFeatures(){ return Array.from(document.querySelectorAll('#featureChoices input:checked')).map(c=>c.value); }
     function getRecommendation(){
-      const f = getSelectedFeatures();
+      const f=getSelectedFeatures();
       let plan='الأساسية', price='70 د.أ', reason='موقع تعريفي وميزات أساسية.';
-      if (f.includes('دفع أونلاين')) { plan='المتقدمة'; price='270 د.أ'; reason='يتضمن دفع أونلاين وتكاملات.'; }
+      if(f.includes('دفع أونلاين')){ plan='المتقدمة'; price='270 د.أ'; reason='يتضمن دفع أونلاين وتكاملات.'; }
       else{
         const group=['منيو أونلاين وQR','حجز مواعيد إلى الإيميل','طلبات أونلاين بسيطة','معرض صور/أعمال','مدونة/مقالات','تعدد اللغات','تأمين دومين واستضافة'];
         const count=f.filter(x=>group.includes(x)).length;
-        if (count>=2){ plan='برو'; price='170 د.أ'; reason=`اخترت ${count} ميزات متقدمة.`; }
+        if(count>=2){ plan='برو'; price='170 د.أ'; reason=`اخترت ${count} ميزات متقدمة.`; }
       }
       return {plan, price, reason};
     }
@@ -380,10 +377,42 @@
     document.querySelectorAll('#featureChoices input, #siteType').forEach(el=> el.addEventListener('change', updateEstimator));
     updateEstimator();
 
+    // UTM
     const utm=(()=>{ const p=new URLSearchParams(location.search);
       const keys=['utm_source','utm_medium','utm_campaign','utm_content','utm_term']; const obj={};
-      keys.forEach(k=>{ if(p.get(k)) obj[k]=p.get(k)); return obj; })();
+      keys.forEach(k=>{ if(p.get(k)) obj[k]=p.get(k); }); return obj; })();
 
+    // Jordan phone formatting: 07X XXX XXXX (X=digits, 077/078/079)
+    function formatJordanPhone(value){
+      const digits=(value||'').replace(/\D/g,'').replace(/^00/, '0'); // handle 00
+      let d=digits;
+      // allow dropping leading country code 962 / +962
+      if(d.startsWith('962')) d='0'+d.slice(3);
+      if(d.startsWith('0962')) d='0'+d.slice(4);
+      if(d.startsWith('+962')) d='0'+d.slice(4);
+      if(d.length>10) d=d.slice(0,10);
+      // insert spaces: 3-3-4
+      if(d.length>3 && d.length<=6) d=d.slice(0,3)+' '+d.slice(3);
+      else if(d.length>6) d=d.slice(0,3)+' '+d.slice(3,6)+' '+d.slice(6);
+      return d;
+    }
+    function isValidJordanPhone(raw){
+      const d=raw.replace(/\D/g,'').replace(/^00/, '0').replace(/^(\+)?962/, '0');
+      return /^07(7|8|9)\d{7}$/.test(d);
+    }
+    const phoneInput=$('phone');
+    phoneInput.addEventListener('input', ()=>{
+      const pos=phoneInput.selectionStart;
+      const beforeLen=phoneInput.value.length;
+      phoneInput.value=formatJordanPhone(phoneInput.value);
+      const afterLen=phoneInput.value.length;
+      // try keep caret roughly in place
+      const delta=afterLen-beforeLen;
+      phoneInput.setSelectionRange(Math.max(0,(pos+delta)), Math.max(0,(pos+delta)));
+    });
+    phoneInput.addEventListener('blur', ()=>{ phoneInput.value=formatJordanPhone(phoneInput.value); });
+
+    // ملخص
     function buildSummary(){
       const name=$('fullName').value.trim();
       const phone=$('phone').value.trim();
@@ -399,61 +428,117 @@
       const stylePref=$('stylePref').value;
       const brandColor=$('brandColor').value;
       const assetsLink=$('assetsLink').value.trim();
-      const refs=[$('ref1')?.value.trim(), $('ref2')?.value.trim()].filter(Boolean);
+      const refs=[$('ref1').value.trim(), $('ref2').value.trim()].filter(Boolean);
       const rec=getRecommendation();
 
-      const lines=[
-        'طلب موقع جديد:',
-        `الاسم: ${name}`,
-        `الهاتف/واتساب: ${phone}`,
-        `البريد: ${email}`,
-        business?`النشاط: ${business}`:null,
-        industry?`القطاع: ${industry}`:null,
-        currentSite?`موقع حالي: ${currentSite}`:null,
-        `نوع الموقع: ${siteType || '-'}`,
-        features.length?`ميزات مطلوبة: ${features.join('، ')}`:null,
-        stylePref?`ستايل التصميم: ${stylePref}`:null,
-        brandColor?`لون العلامة: ${brandColor}`:null,
-        assetsLink?`رابط الملفات: ${assetsLink}`:null,
-        refs.length?`مواقع مرجعية: ${refs.join(' , ')}`:null,
-        contactTime?`وقت التواصل المفضّل: ${contactTime}`:null,
-        contactPref?`طريقة التواصل: ${contactPref}`:null,
-        `الباقة المقترحة: ${rec.plan} — سعر مبدئي: ${rec.price}`,
-        notes?`\nملاحظات إضافية:\n${notes}`:null,
-        (typeof utm==='object' && Object.keys(utm).length)?`\nوسوم UTM:\n${JSON.stringify(utm)}`:null
-      ].filter(Boolean);
+      const lines=[];
+      lines.push('طلب موقع جديد:');
+      lines.push(`الاسم: ${name}`);
+      lines.push(`الهاتف/واتساب: ${phone}`);
+      lines.push(`البريد: ${email}`);
+      if(business) lines.push(`النشاط: ${business}`);
+      if(industry) lines.push(`القطاع: ${industry}`);
+      if(currentSite) lines.push(`موقع حالي: ${currentSite}`);
+      lines.push(`نوع الموقع: ${siteType || '-'}`);
+      if(features.length) lines.push(`ميزات مطلوبة: ${features.join('، ')}`);
+      if(stylePref) lines.push(`ستايل التصميم: ${stylePref}`);
+      if(brandColor) lines.push(`لون العلامة: ${brandColor}`);
+      if(assetsLink) lines.push(`رابط الملفات: ${assetsLink}`);
+      if(refs.length) lines.push(`مواقع مرجعية: ${refs.join(' , ')}`);
+      if(contactTime) lines.push(`وقت التواصل المفضّل: ${contactTime}`);
+      if(contactPref) lines.push(`طريقة التواصل: ${contactPref}`);
+      lines.push(`الباقة المقترحة: ${rec.plan} — سعر مبدئي: ${rec.price}`);
+      if(notes){ lines.push(''); lines.push('ملاحظات إضافية:'); lines.push(notes); }
+      if(Object.keys(utm).length){ lines.push(''); lines.push('وسوم UTM:'); lines.push(JSON.stringify(utm)); }
       return lines.join('\n');
     }
 
+    // تمييز الحقول المطلوبة
+    function setInvalid(el, on){
+      el.classList.toggle('invalid', on);
+      if(on){
+        const clear = () => el.classList.remove('invalid');
+        el.addEventListener('input', clear, {once:true});
+        el.addEventListener('change', clear, {once:true});
+      }
+    }
     function validateRequired(){
       const req=['fullName','phone','email','siteType','agree']; let ok=true;
       req.forEach(id=>{
-        const el=document.getElementById(id);
-        if((el.type==='checkbox' && !el.checked) || (el.type!=='checkbox' && !el.value.trim())){
-          ok=false; el.style.borderColor='#ff6b6b';
-          el.addEventListener('input',()=> el.style.borderColor='rgba(255,255,255,.08)',{once:true});
-        }
+        const el=$(id);
+        let empty=(el.type==='checkbox' ? !el.checked : !el.value.trim());
+        // فحص رقم أردني
+        if(id==='phone' && !empty && !isValidJordanPhone(el.value)) empty=true;
+        setInvalid(el, empty); if(empty) ok=false;
       });
-      if(document.getElementById('hp').value.trim()){
-        ok=false; alert('تم إيقاف الإرسال (مرشح سبام).');
-      }
+      if($('hp').value.trim()){ ok=false; alert('تم إيقاف الإرسال (مرشح سبام).'); }
       return ok;
     }
 
-    document.getElementById('siteForm').addEventListener('submit', function(e){
+    // حفظ تلقائي
+    const LS_KEY='siteFormData';
+    function saveForm(){
+      const data={};
+      document.querySelectorAll('#siteForm input, #siteForm select, #siteForm textarea').forEach(el=>{
+        if(el.id==='hp') return;
+        if(el.type==='checkbox' && el.closest('#featureChoices')) return;
+        data[el.id]=(el.type==='checkbox')?el.checked:el.value;
+      });
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+    }
+    function restoreForm(){
+      const raw=localStorage.getItem(LS_KEY); if(!raw) return;
+      try{
+        const data=JSON.parse(raw);
+        Object.entries(data).forEach(([id,val])=>{ const el=$(id); if(el) el.type==='checkbox'? el.checked=!!val : el.value=val??''; });
+      }catch{}
+      updateEstimator();
+    }
+    function clearForm(){
+      document.getElementById('siteForm').reset();
+      localStorage.removeItem(LS_KEY);
+      document.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));
+      updateEstimator();
+    }
+    restoreForm();
+    document.getElementById('siteForm').addEventListener('input', saveForm);
+    document.getElementById('clearForm').addEventListener('click', clearForm);
+
+    // reCAPTCHA helper (اختياري)
+    async function getRecaptchaToken(action='contact'){
+      const meta=document.querySelector('meta[name="recaptcha-sitekey"]');
+      const sitekey=meta && meta.content;
+      if(!(window.grecaptcha && sitekey)) return null; // سكربت/مفتاح غير موجود => تجاهُل
+      try{
+        await grecaptcha.ready();
+        const token=await grecaptcha.execute(sitekey,{action});
+        return token;
+      }catch{ return null; }
+    }
+
+    // إرسال واتساب + تحويل لشكرًا
+    document.getElementById('siteForm').addEventListener('submit', async function(e){
       e.preventDefault();
       if(!validateRequired()) return;
-      const text=encodeURIComponent(buildSummary());
+      const token=await getRecaptchaToken('whatsapp'); // قد يكون null لو مش مُفعّل
+      const text=encodeURIComponent(buildSummary() + (token? `\n\nreCAPTCHA:${token}`:'' ));
       window.open(`https://wa.me/962790986908?text=${text}`,'_blank');
+      setTimeout(()=>{ window.location.href='thankyou.html'; }, 400);
     });
 
-    document.getElementById('sendEmail').addEventListener('click', function(){
+    // إرسال عبر الإيميل
+    document.getElementById('sendEmail').addEventListener('click', async function(){
       if(!validateRequired()) return;
-      const body=encodeURIComponent(buildSummary());
+      const token=await getRecaptchaToken('email');
+      const body=encodeURIComponent(buildSummary() + (token? `\n\nreCAPTCHA:${token}`:'' ));
       const subject=encodeURIComponent('طلب موقع جديد — Shlool Web');
-      window.location.href=`mailto:mshlool684@gmail.com?subject=${subject}&body=${body}`;
+      const a=document.createElement('a');
+      a.href=`mailto:mshlool684@gmail.com?subject=${subject}&body=${body}`;
+      a.style.display='none'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>{ window.location.href='thankyou.html'; }, 400);
     });
 
+    // نسخ الملخص
     document.getElementById('copySummary').addEventListener('click', async function(){
       const txt=buildSummary();
       try{ await navigator.clipboard.writeText(txt); alert('تم نسخ الطلب إلى الحافظة ✅'); }
