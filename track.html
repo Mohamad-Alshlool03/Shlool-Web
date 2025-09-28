@@ -70,6 +70,10 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    // === إعدادات الويب آب (تم لصق الرابط) ===
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwDYQZgMCa3OGXNLvtNGJ9KDeI06AthQKpWrip27puCvDI7St9O3OExaekI3in1pH9brw/exec';
+    const WEB_APP_TOKEN = 'Mohamad&03';
+
     // Toast
     const toast = document.getElementById('toast'); let tTimer;
     function notify(msg){ toast.textContent = msg; toast.classList.add('show'); clearTimeout(tTimer); tTimer = setTimeout(()=>toast.classList.remove('show'), 2200); }
@@ -91,30 +95,52 @@
       }
     }catch{}
 
-    // حالة مؤقتة (بدّل لاحقًا بنداء API)
-    const mockStatus = (orderId && sessionStorage.getItem(`status:${orderId}`)) || 'received';
-    const map = {
-      received: {text:'تم استلام الطلب ✅', step:1},
-      reviewing:{text:'طلبك تحت المراجعة 🔍', step:2},
-      quoted:   {text:'تم إرسال عرض السعر 📝', step:3},
-      started:  {text:'بدأ التنفيذ 🚀', step:4}
-    };
-    const st = map[mockStatus] || map.received;
+    // جلب الحالة من الخادم
+    (async ()=>{
+      const stateEl = document.getElementById('state');
+      const stepsEl = document.getElementById('steps');
 
-    document.getElementById('state').textContent = st.text;
-    document.getElementById('steps').hidden = false;
-    document.querySelectorAll('.step').forEach(el=>{
-      const s = Number(el.dataset.step);
-      if(s <= st.step){ el.classList.add('active'); }
-    });
+      if(!orderId || orderId==='—'){
+        stateEl.textContent = 'لم يحدد رقم الطلب.';
+        return;
+      }
+
+      try{
+        const url = `${WEB_APP_URL}?id=${encodeURIComponent(orderId)}`;
+        const res = await fetch(url, {method:'GET', mode:'cors'});
+        const data = await res.json();
+
+        if(!data.ok){ stateEl.textContent = 'تعذّر جلب الحالة.'; return; }
+        if(!data.found){ stateEl.textContent = 'لم نجد هذا الطلب. تأكد من الرقم.'; return; }
+
+        const status = String(data.order.status||'received');
+        const map = {
+          received: {text:'تم استلام الطلب ✅', step:1},
+          reviewing:{text:'طلبك تحت المراجعة 🔍', step:2},
+          quoted:   {text:'تم إرسال عرض السعر 📝', step:3},
+          started:  {text:'بدأ التنفيذ 🚀', step:4},
+          done:     {text:'اكتمل الطلب 🎉', step:4},
+          cancelled:{text:'تم إلغاء الطلب', step:1}
+        };
+        const st = map[status] || map.received;
+
+        stateEl.textContent = st.text;
+        stepsEl.hidden = false;
+        document.querySelectorAll('.step').forEach(el=>{
+          const s = Number(el.dataset.step);
+          if(s <= st.step){ el.classList.add('active'); }
+        });
+      }catch(err){
+        stateEl.textContent = 'خطأ في الاتصال بالخادم.';
+        console.error(err);
+      }
+    })();
 
     // نسخ رابط الصفحة
     document.getElementById('copyUrl').addEventListener('click', async ()=>{
       try{ await navigator.clipboard.writeText(location.href); notify('تم نسخ الرابط 🔗'); }
       catch{ notify('تعذّر النسخ.'); }
     });
-
-    // ملاحظة: في النسخة الفعلية، اجلب الحالة من السيرفر: GET /api/orders/:id
   </script>
 </body>
 </html>
