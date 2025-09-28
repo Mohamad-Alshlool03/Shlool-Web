@@ -135,16 +135,16 @@
         <input id="pin" type="password" inputmode="text" autocomplete="off" placeholder="••••••••" dir="ltr">
         <button class="btn" id="enterBtn">دخول</button>
       </div>
-      <small class="muted">هذا قفل واجهة فقط. المصادقة الحقيقية تتم بهيدر الطلب (TOKEN).</small>
+      <small class="muted">هذا قفل واجهة فقط. المصادقة الحقيقية تتم بهيدر/جسم الطلب (TOKEN).</small>
     </div>
   </section>
 
   <div class="toast" id="toast"></div>
 
   <script>
-    // === إعدادات Web App ===
-    const WEB_APP_URL   = 'https://script.google.com/macros/s/AKfycbwDYQZgMCa3OGXNLvtNGJ9KDeI06AthQKpWrip27puCvDI7St9O3OExaekI3in1pH9brw/exec';
-    const WEB_APP_TOKEN = 'Mohamad&03';
+    // === إعدادات Web App (الرابط الجديد) ===
+    const WEB_APP_URL   = 'https://script.google.com/macros/s/AKfycbzSlgjTUNjtnR-jyG1w7Et6Ix3kiTLUHeb3FU13EapmQ6AgYVL1vZFC5zDpis-6u469vw/exec';
+    const WEB_APP_TOKEN = 'Mohamad&03'; // بدّلها إذا غيّرتها في Apps Script
 
     // مساعدة
     const $ = id => document.getElementById(id);
@@ -177,10 +177,9 @@
       else if(last){ $('orderId').value = last; }
       if($('orderId').value.trim()) { loadOrder(); }
     }
-    // لو كان مفتوح مسبقًا بدون بوابة
     if(!$('gate').hidden){} else { prefillAndAutoload(); }
 
-    // تحميل طلب (مع كشف أخطاء أفضل ومنع الكاش)
+    // تحميل طلب (GET) — منع كاش + أخطاء أوضح
     async function loadOrder(){
       const oid = $('orderId').value.trim();
       if(!oid){ notify('أدخل رقم الطلب'); return; }
@@ -207,17 +206,17 @@
         notify('تم الجلب ✅');
       }catch(err){
         console.error(err);
-        notify('خطأ اتصال (تحقق من نشر الويب آب)');
+        notify('خطأ اتصال (تحقّق من نشر الويب آب)');
       }
     }
 
-    // حفظ/تحديث (مع مهلة وقراءة رسالة الخطأ)
+    // حفظ/تحديث (POST x-www-form-urlencoded لتجنّب preflight)
     async function saveOrder(){
       const oid = $('orderId').value.trim();
       if(!oid){ notify('رقم الطلب مطلوب'); return; }
 
       const payload = {
-        token: WEB_APP_TOKEN,
+        token:  WEB_APP_TOKEN,
         orderId: oid,
         status: $('status').value,
         fullName: $('fullName').value.trim(),
@@ -228,26 +227,22 @@
 
       const btn = $('saveBtn'); const old = btn.textContent; btn.disabled = true; btn.textContent = 'جارٍ الحفظ…';
 
-      const ctl = new AbortController(); const timeout = setTimeout(()=>ctl.abort(), 12000);
-
       try{
-        const res = await fetch(WEB_APP_URL, {
-          method: 'POST', mode: 'cors', signal: ctl.signal,
-          headers: { 'Content-Type': 'application/json', 'x-shlool-key': WEB_APP_TOKEN },
-          body: JSON.stringify(payload)
+        const body = new URLSearchParams(payload).toString();
+        const res  = await fetch(WEB_APP_URL, {
+          method:'POST',
+          mode:'cors',
+          headers:{ 'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8' },
+          body
         });
-        clearTimeout(timeout);
         const text = await res.text();
-        let out; try{ out = JSON.parse(text); }
-        catch(e){ console.error('Raw response:', text); notify('رد غير متوقع من الخادم'); return; }
-
+        let out; try{ out = JSON.parse(text); }catch{ console.error('Raw:', text); notify('رد غير متوقع'); return; }
         if(!out.ok){ notify(out.error ? `فشل الحفظ: ${out.error}` : 'فشل الحفظ'); return; }
 
         sessionStorage.setItem('lastOrderId', oid);
         notify('تم الحفظ ✅');
       }catch(err){
-        if(err.name === 'AbortError'){ notify('انتهت المهلة — تحقق من الاتصال'); }
-        else{ console.error(err); notify('خطأ اتصال'); }
+        console.error(err); notify('خطأ اتصال');
       }finally{
         btn.disabled = false; btn.textContent = old;
       }
