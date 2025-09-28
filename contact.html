@@ -382,16 +382,14 @@
       const keys=['utm_source','utm_medium','utm_campaign','utm_content','utm_term']; const obj={};
       keys.forEach(k=>{ if(p.get(k)) obj[k]=p.get(k); }); return obj; })();
 
-    // Jordan phone formatting: 07X XXX XXXX (X=digits, 077/078/079)
+    // Jordan phone formatting: 07X XXX XXXX (077/078/079)
     function formatJordanPhone(value){
-      const digits=(value||'').replace(/\D/g,'').replace(/^00/, '0'); // handle 00
+      const digits=(value||'').replace(/\D/g,'').replace(/^00/, '0');
       let d=digits;
-      // allow dropping leading country code 962 / +962
       if(d.startsWith('962')) d='0'+d.slice(3);
       if(d.startsWith('0962')) d='0'+d.slice(4);
       if(d.startsWith('+962')) d='0'+d.slice(4);
       if(d.length>10) d=d.slice(0,10);
-      // insert spaces: 3-3-4
       if(d.length>3 && d.length<=6) d=d.slice(0,3)+' '+d.slice(3);
       else if(d.length>6) d=d.slice(0,3)+' '+d.slice(3,6)+' '+d.slice(6);
       return d;
@@ -406,7 +404,6 @@
       const beforeLen=phoneInput.value.length;
       phoneInput.value=formatJordanPhone(phoneInput.value);
       const afterLen=phoneInput.value.length;
-      // try keep caret roughly in place
       const delta=afterLen-beforeLen;
       phoneInput.setSelectionRange(Math.max(0,(pos+delta)), Math.max(0,(pos+delta)));
     });
@@ -453,6 +450,31 @@
       return lines.join('\n');
     }
 
+    // تمرير البيانات لصفحة الشكر
+    function saveSummaryForThankYou(){
+      const summary = buildSummary();
+      const data = {
+        fullName: ($('fullName')?.value||'').trim(),
+        phone: ($('phone')?.value||'').trim(),
+        email: ($('email')?.value||'').trim(),
+        business: ($('business')?.value||'').trim(),
+        industry: ($('industry')?.value||''),
+        currentSite: ($('currentSite')?.value||'').trim(),
+        siteType: ($('siteType')?.value||''),
+        features: getSelectedFeatures(),
+        stylePref: ($('stylePref')?.value||''),
+        brandColor: ($('brandColor')?.value||''),
+        assetsLink: ($('assetsLink')?.value||'').trim(),
+        ref1: (document.getElementById('ref1')?.value||'').trim(),
+        ref2: (document.getElementById('ref2')?.value||'').trim(),
+        contactTime: ($('contactTime')?.value||'').trim(),
+        contactPref: ($('contactPref')?.value||''),
+        notes: ($('notes')?.value||'').trim()
+      };
+      sessionStorage.setItem('orderSummary', summary);
+      sessionStorage.setItem('orderData', JSON.stringify(data));
+    }
+
     // تمييز الحقول المطلوبة
     function setInvalid(el, on){
       el.classList.toggle('invalid', on);
@@ -467,7 +489,6 @@
       req.forEach(id=>{
         const el=$(id);
         let empty=(el.type==='checkbox' ? !el.checked : !el.value.trim());
-        // فحص رقم أردني
         if(id==='phone' && !empty && !isValidJordanPhone(el.value)) empty=true;
         setInvalid(el, empty); if(empty) ok=false;
       });
@@ -508,7 +529,7 @@
     async function getRecaptchaToken(action='contact'){
       const meta=document.querySelector('meta[name="recaptcha-sitekey"]');
       const sitekey=meta && meta.content;
-      if(!(window.grecaptcha && sitekey)) return null; // سكربت/مفتاح غير موجود => تجاهُل
+      if(!(window.grecaptcha && sitekey)) return null;
       try{
         await grecaptcha.ready();
         const token=await grecaptcha.execute(sitekey,{action});
@@ -520,9 +541,10 @@
     document.getElementById('siteForm').addEventListener('submit', async function(e){
       e.preventDefault();
       if(!validateRequired()) return;
-      const token=await getRecaptchaToken('whatsapp'); // قد يكون null لو مش مُفعّل
+      const token=await getRecaptchaToken('whatsapp');
       const text=encodeURIComponent(buildSummary() + (token? `\n\nreCAPTCHA:${token}`:'' ));
       window.open(`https://wa.me/962790986908?text=${text}`,'_blank');
+      saveSummaryForThankYou();
       setTimeout(()=>{ window.location.href='thankyou.html'; }, 400);
     });
 
@@ -535,6 +557,7 @@
       const a=document.createElement('a');
       a.href=`mailto:mshlool684@gmail.com?subject=${subject}&body=${body}`;
       a.style.display='none'; document.body.appendChild(a); a.click(); a.remove();
+      saveSummaryForThankYou();
       setTimeout(()=>{ window.location.href='thankyou.html'; }, 400);
     });
 
