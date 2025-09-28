@@ -1,300 +1,156 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>لوحة الإدارة — Shlool Web</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
-  <meta name="color-scheme" content="dark light">
-  <style>
-    :root{
-      --bg:#0f1115; --card:#171a21; --surface:#12141a; --text:#e9ecf1; --muted:#b7c0cc;
-      --border:rgba(255,255,255,.08); --radius:16px; --accent:#0a84ff; --max:1050px;
-      --shadow:0 12px 36px rgba(0,0,0,.45);
-      --green:#22c55e; --amber:#f59e0b; --red:#ef4444;
+/** === الإعدادات العامة === **/
+const SHEET_NAME = 'orders';
+const ADMIN_TOKEN = 'Mohamad&03'; // بدّله حسب رغبتك
+
+/** === Utilities === **/
+function getSheet_() {
+  const ss = SpreadsheetApp.getActive();
+  const sh = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
+  // تأكد من وجود رؤوس
+  const headers = ['orderId','status','fullName','phone','email','notes','updatedAt'];
+  const firstRow = sh.getRange(1,1,1,headers.length).getValues()[0];
+  if (firstRow.join('') === '') {
+    sh.getRange(1,1,1,headers.length).setValues([headers]);
+  }
+  return sh;
+}
+
+function findRowByOrderId_(orderId){
+  const sh = getSheet_();
+  const last = sh.getLastRow();
+  if (last < 2) return { row: -1, data: null };
+  const range = sh.getRange(2,1,last-1,7).getValues();
+  for (let i=0;i<range.length;i++){
+    if (String(range[i][0]).trim() === String(orderId).trim()){
+      return { row: i+2, data: range[i] };
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial; color:var(--text);
-      background:
-        radial-gradient(1400px 900px at 75% -200px, rgba(64,179,255,.12), transparent 60%),
-        linear-gradient(180deg, #0c0e13, var(--bg));
-    }
-    .topbar{
-      position:sticky; top:0; z-index:10; backdrop-filter: blur(10px);
-      background:linear-gradient(90deg, color-mix(in oklab, var(--accent) 22%, transparent), transparent);
-      border-bottom:1px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:800}
-    .wrap{max-width:var(--max); margin:auto; padding:24px 18px 38px}
-    .panel{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
-    .row{display:grid; grid-template-columns:180px 1fr auto; gap:10px; align-items:center; margin-bottom:10px}
-    label{font-weight:800}
-    input,select,textarea{
-      width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--border);
-      background:#101318; color:var(--text); font:inherit; outline:none;
-    }
-    textarea{min-height:110px; resize:vertical; line-height:1.7}
-    .btns{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
-    .btn{
-      display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid var(--border);
-      background:linear-gradient(135deg,var(--accent),color-mix(in oklab, var(--accent) 60%, #40b3ff)); color:#fff; font-weight:800; text-decoration:none; cursor:pointer;
-    }
-    .ghost{background:transparent; color:var(--text)}
-    .ok{background:linear-gradient(135deg,var(--green),#58d08a); border-color:rgba(34,197,94,.35)}
-    .warn{background:linear-gradient(135deg,var(--amber),#ffd166); border-color:rgba(245,158,11,.35); color:#0b0f16}
-    .danger{background:linear-gradient(135deg,var(--red),#ff7b7b); border-color:rgba(239,68,68,.35)}
-    .pill{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.06); font-weight:800}
-    .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
-    small.muted{color:var(--muted)}
-    .two{display:grid; grid-template-columns:1.05fr .95fr; gap:16px}
-    @media (max-width:900px){ .two{grid-template-columns:1fr} .row{grid-template-columns:1fr} }
-    .toast{
-      position:fixed; inset:auto 16px 16px auto; z-index:50; background:#0e1117; color:#fff;
-      border:1px solid var(--border); border-radius:12px; padding:10px 14px; box-shadow:var(--shadow);
-      opacity:0; transform:translateY(8px); transition:opacity .25s, transform .25s;
-    }
-    .toast.show{opacity:1; transform:translateY(0)}
-    .gate{display:grid; place-items:center; min-height:45vh}
-    .gate .panel{max-width:520px}
-    button:disabled{opacity:.6; cursor:not-allowed}
-  </style>
-</head>
-<body>
-  <div class="topbar">
-    <div class="brand">
-      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in oklab,var(--accent) 25%, transparent)"></span>
-      Shlool Web — لوحة الإدارة
-    </div>
-    <div class="pill">exec: <span class="mono" style="font-size:12px">Apps Script</span></div>
-  </div>
+  }
+  return { row: -1, data: null };
+}
 
-  <main class="wrap" id="app" hidden>
-    <section class="panel">
-      <div class="row" style="grid-template-columns:160px 1fr auto">
-        <label for="orderId">رقم الطلب</label>
-        <input id="orderId" class="mono" placeholder="SH-YYMMDD-ABCDE" dir="ltr">
-        <div class="btns">
-          <button class="btn" id="loadBtn">جلب</button>
-          <button class="btn ghost" id="copyIdBtn">نسخ</button>
-          <a class="btn ghost" id="openTrack" target="_blank" rel="noopener">فتح التتبّع</a>
-        </div>
-      </div>
+function toObject_(arr){
+  const [orderId,status,fullName,phone,email,notes,updatedAt] = arr;
+  return { orderId, status, fullName, phone, email, notes, updatedAt };
+}
 
-      <div class="two">
-        <div class="panel" style="background:var(--surface)">
-          <h3 style="margin-top:0">بيانات العميل</h3>
-          <div class="row"><label for="fullName">الاسم</label><input id="fullName" placeholder="Full name"><div></div></div>
-          <div class="row"><label for="phone">الهاتف/واتساب</label><input id="phone" placeholder="07X XXX XXXX"><div></div></div>
-          <div class="row"><label for="email">الإيميل</label><input id="email" type="email" placeholder="example@email.com" dir="ltr"><div></div></div>
-          <div class="row"><label for="notes">ملاحظات داخلية</label><textarea id="notes" placeholder="ملاحظات تخص التنفيذ/المتابعة…"></textarea><div></div></div>
-          <div class="btns">
-            <button class="btn ok" id="saveBtn">حفظ / تحديث</button>
-            <button class="btn ghost" id="copyWhatsApp">نسخ رسالة واتساب</button>
-          </div>
-          <small class="muted">الحفظ يحدّث الشيت فورًا عبر الويب آب.</small>
-        </div>
+function jsonResponse_(obj, callback){
+  const body = JSON.stringify(obj);
+  const mime = callback ? ContentService.MimeType.JAVASCRIPT : ContentService.MimeType.JSON;
+  const content = callback ? `${callback}(${body});` : body;
+  const out = ContentService.createTextOutput(content).setMimeType(mime);
+  // تلميحات عدم الكاش + CORS (للـ fetch)
+  const resp = HtmlService.createHtmlOutput('').getResponse();
+  resp.setHeader('Access-Control-Allow-Origin','*');
+  resp.setHeader('Access-Control-Allow-Headers','Content-Type');
+  resp.setHeader('Access-Control-Allow-Methods','GET,POST,OPTIONS');
+  resp.setHeader('Cache-Control','no-store, max-age=0');
+  // Apps Script لا يرجّع Response مباشرة من ContentService،
+  // لكن الهيدرز أعلاه تفيد مع HtmlService؛ أما هنا نرجّع ContentService فقط.
+  return out;
+}
 
-        <div class="panel" style="background:var(--surface)">
-          <h3 style="margin-top:0">حالة الطلب</h3>
-          <div class="row" style="grid-template-columns:160px 1fr">
-            <label for="status">الحالة</label>
-            <select id="status">
-              <option value="received">received — تم الاستلام</option>
-              <option value="reviewing">reviewing — تحت المراجعة</option>
-              <option value="quoted">quoted — أُرسل عرض السعر</option>
-              <option value="started">started — بدأ التنفيذ</option>
-              <option value="done">done — اكتمل</option>
-              <option value="cancelled">cancelled — أُلغِي</option>
-            </select>
-          </div>
-          <div class="btns">
-            <button class="btn warn" data-status="reviewing">تحت المراجعة</button>
-            <button class="btn" data-status="quoted">أرسلنا العرض</button>
-            <button class="btn" data-status="started">بدء التنفيذ</button>
-            <button class="btn ok" data-status="done">إنهاء</button>
-            <button class="btn danger" data-status="cancelled">إلغاء</button>
-          </div>
-          <div class="btns" style="margin-top:8px">
-            <button class="btn ghost" id="refreshBtn">تحديث من الشيت</button>
-            <button class="btn ghost" id="copyTrack">نسخ رابط التتبّع</button>
-          </div>
-          <small class="muted">زرّ الحالة يغيّر القيمة ثم يحفظ تلقائيًا.</small>
-        </div>
-      </div>
-    </section>
-  </main>
+/** === GET (قراءة / JSONP / upsert عبر GET) ===
+ * أمثلة:
+ *  - قراءة:  GET ?id=SH-123
+ *  - upsert: GET ?action=upsert&token=...&orderId=...&status=...&fullName=...&...
+ *  - JSONP:  أضف callback=cbName
+ */
+function doGet(e){
+  try{
+    const p = e.parameter || {};
+    const cb = p.callback; // JSONP?
+    const action = (p.action||'').toLowerCase();
 
-  <!-- بوابة PIN بسيطة (واجهة فقط) -->
-  <section class="gate" id="gate">
-    <div class="panel">
-      <h2 style="margin:0 0 8px">دخول لوحة الإدارة</h2>
-      <p class="muted" style="margin:0 0 12px">أدخل مفتاح الإدارة للمتابعة.</p>
-      <div class="row" style="grid-template-columns:160px 1fr auto">
-        <label for="pin">Admin PIN</label>
-        <input id="pin" type="password" inputmode="text" autocomplete="off" placeholder="••••••••" dir="ltr">
-        <button class="btn" id="enterBtn">دخول</button>
-      </div>
-      <small class="muted">هذا قفل واجهة فقط. المصادقة الحقيقية تتم بهيدر/جسم الطلب (TOKEN).</small>
-    </div>
-  </section>
-
-  <div class="toast" id="toast"></div>
-
-  <script>
-    // === إعدادات Web App (الرابط الجديد) ===
-    const WEB_APP_URL   = 'https://script.google.com/macros/s/AKfycbzSlgjTUNjtnR-jyG1w7Et6Ix3kiTLUHeb3FU13EapmQ6AgYVL1vZFC5zDpis-6u469vw/exec';
-    const WEB_APP_TOKEN = 'Mohamad&03'; // بدّلها إذا غيّرتها في Apps Script
-
-    // مساعدة
-    const $ = id => document.getElementById(id);
-    const toast = $('toast'); let tTimer;
-    function notify(msg){ toast.textContent=msg; toast.classList.add('show'); clearTimeout(tTimer); tTimer=setTimeout(()=>toast.classList.remove('show'),2200); }
-
-    // قفل واجهة بسيط
-    const GATE_KEY = 'adminKey';
-    function openApp(){ $('gate').hidden = true; $('app').hidden = false; }
-    $('enterBtn').addEventListener('click', ()=>{
-      const v = $('pin').value.trim();
-      if(!v){ notify('أدخل الـ PIN'); return; }
-      if(v !== WEB_APP_TOKEN){ notify('PIN غير صحيح'); return; }
-      sessionStorage.setItem(GATE_KEY, v); openApp(); prefillAndAutoload();
-    });
-    if(sessionStorage.getItem(GATE_KEY) === WEB_APP_TOKEN){ openApp(); }
-
-    // توليد رابط تتبّع
-    function trackUrl(oid){
-      const base = location.pathname.replace(/[^/]+$/, '');
-      return `${location.origin}${base}track.html?id=${encodeURIComponent(oid)}`;
-    }
-
-    // Prefill من ?id= أو آخر رقم تم العمل عليه + جلب فوري
-    function prefillAndAutoload(){
-      const p = new URLSearchParams(location.search);
-      const fromUrl = p.get('id');
-      const last = sessionStorage.getItem('lastOrderId') || '';
-      if(fromUrl){ $('orderId').value = fromUrl; }
-      else if(last){ $('orderId').value = last; }
-      if($('orderId').value.trim()) { loadOrder(); }
-    }
-    if(!$('gate').hidden){} else { prefillAndAutoload(); }
-
-    // تحميل طلب (GET) — منع كاش + أخطاء أوضح
-    async function loadOrder(){
-      const oid = $('orderId').value.trim();
-      if(!oid){ notify('أدخل رقم الطلب'); return; }
-      try{
-        const res = await fetch(`${WEB_APP_URL}?id=${encodeURIComponent(oid)}`, {
-          method:'GET', mode:'cors', cache:'no-store'
-        });
-        const text = await res.text();
-        let data; try{ data = JSON.parse(text); }
-        catch(e){ console.error('Raw response:', text); notify('رد غير متوقع من الخادم'); return; }
-
-        if(!data.ok){ notify(data.error ? `خطأ: ${data.error}` : 'تعذّر الجلب'); return; }
-        if(!data.found){ notify('الطلب غير موجود'); return; }
-
-        const o = data.order || {};
-        $('status').value = String(o.status||'received');
-        $('fullName').value = o.fullName||'';
-        $('phone').value = o.phone||'';
-        $('email').value = o.email||'';
-        $('notes').value = o.notes||'';
-        $('openTrack').href = trackUrl(oid);
-
-        sessionStorage.setItem('lastOrderId', oid);
-        notify('تم الجلب ✅');
-      }catch(err){
-        console.error(err);
-        notify('خطأ اتصال (تحقّق من نشر الويب آب)');
+    if (action === 'upsert') {
+      // upsert عبر GET (fallback)
+      if (p.token !== ADMIN_TOKEN) {
+        return jsonResponse_({ ok:false, error:'unauthorized' }, cb);
       }
-    }
-
-    // حفظ/تحديث (POST x-www-form-urlencoded لتجنّب preflight)
-    async function saveOrder(){
-      const oid = $('orderId').value.trim();
-      if(!oid){ notify('رقم الطلب مطلوب'); return; }
+      const oid = (p.orderId||'').trim();
+      if (!oid) return jsonResponse_({ ok:false, error:'orderId required' }, cb);
 
       const payload = {
-        token:  WEB_APP_TOKEN,
-        orderId: oid,
-        status: $('status').value,
-        fullName: $('fullName').value.trim(),
-        phone: $('phone').value.trim(),
-        email: $('email').value.trim(),
-        notes: $('notes').value.trim()
+        status: (p.status||'received').trim(),
+        fullName: (p.fullName||'').trim(),
+        phone: (p.phone||'').trim(),
+        email: (p.email||'').trim(),
+        notes: (p.notes||'').trim()
       };
-
-      const btn = $('saveBtn'); const old = btn.textContent; btn.disabled = true; btn.textContent = 'جارٍ الحفظ…';
-
-      try{
-        const body = new URLSearchParams(payload).toString();
-        const res  = await fetch(WEB_APP_URL, {
-          method:'POST',
-          mode:'cors',
-          headers:{ 'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8' },
-          body
-        });
-        const text = await res.text();
-        let out; try{ out = JSON.parse(text); }catch{ console.error('Raw:', text); notify('رد غير متوقع'); return; }
-        if(!out.ok){ notify(out.error ? `فشل الحفظ: ${out.error}` : 'فشل الحفظ'); return; }
-
-        sessionStorage.setItem('lastOrderId', oid);
-        notify('تم الحفظ ✅');
-      }catch(err){
-        console.error(err); notify('خطأ اتصال');
-      }finally{
-        btn.disabled = false; btn.textContent = old;
-      }
+      const out = upsert_(oid, payload);
+      return jsonResponse_({ ok:true, updated: true, orderId: oid, row: out.row }, cb);
     }
 
-    // أزرار الحالة السريعة (تغيّر + حفظ + جلب للتأكيد)
-    document.querySelectorAll('[data-status]').forEach(btn=>{
-      btn.addEventListener('click', async ()=>{
-        $('status').value = btn.dataset.status;
-        await saveOrder();
-        loadOrder();
-      });
-    });
+    // قراءة
+    const oid = (p.id||'').trim();
+    if (!oid) {
+      return jsonResponse_({ ok:false, error:'missing id' }, cb);
+    }
+    const sh = getSheet_();
+    const found = findRowByOrderId_(oid);
+    if (found.row === -1) {
+      return jsonResponse_({ ok:true, found:false }, cb);
+    }
+    const obj = toObject_(found.data);
+    return jsonResponse_({ ok:true, found:true, order: obj }, cb);
 
-    // أزرار متنوعة
-    $('loadBtn').addEventListener('click', loadOrder);
-    $('saveBtn').addEventListener('click', saveOrder);
+  }catch(err){
+    return jsonResponse_({ ok:false, error:String(err) });
+  }
+}
 
-    $('copyIdBtn').addEventListener('click', async ()=>{
-      const oid = $('orderId').value.trim(); if(!oid){ notify('لا يوجد رقم'); return; }
-      try{ await navigator.clipboard.writeText(oid); notify('نُسخ الرقم'); }catch{ notify('تعذّر النسخ'); }
-    });
+/** === POST (حفظ) ===
+ * يقبل application/x-www-form-urlencoded لتجنب preflight
+ * الحقول:
+ *  token, orderId, status, fullName, phone, email, notes
+ */
+function doPost(e){
+  try{
+    const p = (e.parameter||{});
+    if (p.token !== ADMIN_TOKEN) {
+      return jsonResponse_({ ok:false, error:'unauthorized' });
+    }
+    const oid = (p.orderId||'').trim();
+    if (!oid) return jsonResponse_({ ok:false, error:'orderId required' });
 
-    $('copyTrack').addEventListener('click', async ()=>{
-      const oid = $('orderId').value.trim(); if(!oid){ notify('لا يوجد رقم'); return; }
-      try{ await navigator.clipboard.writeText(trackUrl(oid)); notify('نُسخ رابط التتبّع'); }catch{ notify('تعذّر النسخ'); }
-    });
+    const payload = {
+      status: (p.status||'received').trim(),
+      fullName: (p.fullName||'').trim(),
+      phone: (p.phone||'').trim(),
+      email: (p.email||'').trim(),
+      notes: (p.notes||'').trim()
+    };
 
-    $('openTrack').addEventListener('click', (e)=>{
-      const oid = $('orderId').value.trim();
-      if(!oid){ e.preventDefault(); notify('أدخل الرقم'); }
-      else{ $('openTrack').href = trackUrl(oid); }
-    });
+    const out = upsert_(oid, payload);
+    return jsonResponse_({ ok:true, updated:true, orderId: oid, row: out.row });
 
-    $('refreshBtn').addEventListener('click', loadOrder);
+  }catch(err){
+    return jsonResponse_({ ok:false, error:String(err) });
+  }
+}
 
-    // رسالة واتساب للعميل
-    $('copyWhatsApp').addEventListener('click', async ()=>{
-      const name = $('fullName').value.trim() || 'عميلنا الكريم';
-      const st = $('status').value;
-      const oid = $('orderId').value.trim();
-      const map = {
-        received:'تم استلام طلبك ✅',
-        reviewing:'طلبك تحت المراجعة 🔍',
-        quoted:'تم إرسال عرض السعر 📝',
-        started:'بدأ التنفيذ 🚀',
-        done:'اكتمل الطلب 🎉',
-        cancelled:'تم إلغاء الطلب'
-      };
-      const msg = `مرحبًا ${name} 👋\n\nبخصوص طلبك رقم ${oid}:\n${map[st]||map.received}\n\nرابط التتبّع:\n${trackUrl(oid)}\n\nأي استفسار أنا حاضر.`;
-      try{ await navigator.clipboard.writeText(msg); notify('نُسخت رسالة واتساب'); }catch{ notify('تعذّر النسخ'); }
-    });
-  </script>
-</body>
-</html>
+/** === منطق الحفظ === **/
+function upsert_(orderId, payload){
+  const sh = getSheet_();
+  const now = new Date();
+  const found = findRowByOrderId_(orderId);
+  const rowData = [
+    orderId,
+    payload.status || 'received',
+    payload.fullName || '',
+    payload.phone || '',
+    payload.email || '',
+    payload.notes || '',
+    now
+  ];
+
+  if (found.row === -1) {
+    // إضافة
+    const r = sh.appendRow(rowData);
+    const newRow = sh.getLastRow();
+    return { mode:'insert', row:newRow };
+  } else {
+    // تحديث
+    sh.getRange(found.row, 1, 1, rowData.length).setValues([rowData]);
+    return { mode:'update', row:found.row };
+  }
+}
