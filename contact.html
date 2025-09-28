@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <!-- نفس meta تبع index بالضبط -->
+  <!-- نفس الـviewport تبع index -->
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>اطلب موقعك — Shlool Web</title>
   <meta name="description" content="اطلب موقعك الآن: اختر الميزات والمدة. نرجع لك بعرض خلال وقت قصير.">
@@ -18,8 +18,8 @@
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:16px; --max:1100px;
     }
-    *{ box-sizing:border-box }
-    html{ scroll-behavior:smooth }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{
       margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
       background:
@@ -27,14 +27,12 @@
         linear-gradient(180deg, #1b1b1b, var(--bg));
       color:var(--text); line-height:1.7;
     }
-    a{ color:var(--blue); text-decoration:none }
-    img, video, canvas{ max-width:100%; height:auto; display:block }
+    a{color:var(--blue); text-decoration:none}
+    img{max-width:100%; height:auto; display:block}
 
     /* Header — مطابق للـ index */
     header{
-      position:sticky; top:0;
-      -webkit-backdrop-filter:saturate(1.2) blur(8px);
-      backdrop-filter:saturate(1.2) blur(8px);
+      position:sticky; top:0; backdrop-filter:saturate(1.2) blur(8px);
       background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.0));
       border-bottom:1px solid rgba(255,255,255,.08);
       z-index:40; box-shadow:0 6px 20px rgba(0,0,0,.25);
@@ -42,7 +40,7 @@
     .nav{max-width:var(--max); margin:auto; padding:14px 20px; display:flex; align-items:center; gap:16px}
     .logo{display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.3px; color:var(--text)}
     .logo-img{height:52px; width:auto; border-radius:10px; box-shadow:var(--shadow); display:block}
-    .nav-gap{flex:1}
+    .nav-gap{margin-inline-start:auto}
 
     .btn{
       display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px;
@@ -53,15 +51,13 @@
     .btn:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(10,132,255,.25)}
     .btn-outline{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.16)}
     .btn-whatsapp{background:linear-gradient(135deg,var(--whatsapp),var(--whatsapp-2)); color:#fff}
-    .btn-whatsapp:hover{box-shadow:0 16px 40px rgba(18,140,126,.28)}
     .btn-ig{background:linear-gradient(135deg,var(--ig4),var(--ig3),var(--ig2),var(--ig1)); color:#fff}
-    .btn-ig:hover{box-shadow:0 16px 40px rgba(221,42,123,.28)}
 
     .wrap{max-width:var(--max); margin:auto; padding:28px 20px}
 
-    /* Hero */
+    /* Hero — مطابق لطريقة index */
     .hero{display:grid; grid-template-columns:1.1fr .9fr; gap:28px; align-items:center; padding-block:32px}
-    .hero > *{ min-width:0 } /* يمنع أي دفع أفقي */
+    .hero > *{min-width:0}
     .title{font-size:clamp(30px, 4vw, 46px); line-height:1.2; margin:0 0 10px; font-weight:800}
     .subtitle{color:var(--muted); font-size:clamp(16px,2.3vw,18px); margin:0 0 20px}
     .badge{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
@@ -70,6 +66,7 @@
 
     .panel{background:var(--card); border:1px solid rgba(255,255,255,.06);
       border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
+
     .grid-2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
     .grid-3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px}
 
@@ -78,7 +75,7 @@
       width:100%; min-width:0; padding:12px 12px; border-radius:12px; background:#1f1f1f;
       border:1px solid rgba(255,255,255,.08); color:var(--text); font:inherit; outline:none;
       transition:border-color .15s ease, box-shadow .15s ease;
-      font-size:16px; /* يمنع الزووم على اللمس */
+      font-size:16px; /* منع زووم الحقول على الموبايل */
     }
     input:focus, select:focus, textarea:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(10,132,255,.15)}
     .hint{color:var(--muted); font-size:13px; margin-top:6px}
@@ -101,7 +98,7 @@
     }
     .small{color:var(--muted); font-size:13px}
 
-    /* Footer */
+    /* Footer — مثل index */
     footer{
       background:var(--surface); border-top:1px solid rgba(255,255,255,.08);
       box-shadow:0 -6px 20px rgba(0,0,0,.25); margin-top:40px;
@@ -114,7 +111,7 @@
     .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
     .reveal.show{opacity:1; transform:none}
 
-    /* نفس نقطة التحوّل تبع index */
+    /* نفس breakpoint تبع index */
     @media (max-width:900px){
       .hero{grid-template-columns:1fr; gap:18px}
       .grid-2,.grid-3{grid-template-columns:1fr}
@@ -129,7 +126,7 @@
         <span>Shlool <span style="color:var(--blue)">Web</span></span>
       </div>
       <div class="nav-gap"></div>
-      <a class="btn-outline btn" href="index.html" aria-label="العودة للرئيسية">العودة للرئيسية</a>
+      <a class="btn btn-outline" href="index.html" aria-label="العودة للرئيسية">العودة للرئيسية</a>
     </nav>
   </header>
 
@@ -340,7 +337,7 @@
   </footer>
 
   <script>
-    // Reveal on scroll (نفس أسلوب index)
+    // Reveal on scroll (نفس index)
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } });
     },{threshold:.08});
