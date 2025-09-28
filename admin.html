@@ -57,6 +57,7 @@
     .toast.show{opacity:1; transform:translateY(0)}
     .gate{display:grid; place-items:center; min-height:45vh}
     .gate .panel{max-width:520px}
+    button:disabled{opacity:.6; cursor:not-allowed}
   </style>
 </head>
 <body>
@@ -142,7 +143,7 @@
 
   <script>
     // === إعدادات Web App ===
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwDYQZgMCa3OGXNLvtNGJ9KDeI06AthQKpWrip27puCvDI7St9O3OExaekI3in1pH9brw/exec';
+    const WEB_APP_URL   = 'https://script.google.com/macros/s/AKfycbwDYQZgMCa3OGXNLvtNGJ9KDeI06AthQKpWrip27puCvDI7St9O3OExaekI3in1pH9brw/exec';
     const WEB_APP_TOKEN = 'Mohamad&03';
 
     // مساعدة
@@ -156,28 +157,44 @@
     $('enterBtn').addEventListener('click', ()=>{
       const v = $('pin').value.trim();
       if(!v){ notify('أدخل الـ PIN'); return; }
-      // اسمح لو يطابق أي قيمة (لكن افتراضيًا نتوقع نفس التوكن)
       if(v !== WEB_APP_TOKEN){ notify('PIN غير صحيح'); return; }
-      sessionStorage.setItem(GATE_KEY, v); openApp();
+      sessionStorage.setItem(GATE_KEY, v); openApp(); prefillAndAutoload();
     });
-    // دخول تلقائي إن سبق وتم إدخاله
     if(sessionStorage.getItem(GATE_KEY) === WEB_APP_TOKEN){ openApp(); }
 
-    // توليد روابط
+    // توليد رابط تتبّع
     function trackUrl(oid){
       const base = location.pathname.replace(/[^/]+$/, '');
       return `${location.origin}${base}track.html?id=${encodeURIComponent(oid)}`;
     }
 
-    // تحميل طلب
+    // Prefill من ?id= أو آخر رقم تم العمل عليه + جلب فوري
+    function prefillAndAutoload(){
+      const p = new URLSearchParams(location.search);
+      const fromUrl = p.get('id');
+      const last = sessionStorage.getItem('lastOrderId') || '';
+      if(fromUrl){ $('orderId').value = fromUrl; }
+      else if(last){ $('orderId').value = last; }
+      if($('orderId').value.trim()) { loadOrder(); }
+    }
+    // لو كان مفتوح مسبقًا بدون بوابة
+    if(!$('gate').hidden){} else { prefillAndAutoload(); }
+
+    // تحميل طلب (مع كشف أخطاء أفضل ومنع الكاش)
     async function loadOrder(){
       const oid = $('orderId').value.trim();
       if(!oid){ notify('أدخل رقم الطلب'); return; }
       try{
-        const res = await fetch(`${WEB_APP_URL}?id=${encodeURIComponent(oid)}`, {method:'GET', mode:'cors'});
-        const data = await res.json();
-        if(!data.ok){ notify('تعذّر الجلب'); return; }
-        if(!data.found){ notify('غير موجود'); return; }
+        const res = await fetch(`${WEB_APP_URL}?id=${encodeURIComponent(oid)}`, {
+          method:'GET', mode:'cors', cache:'no-store'
+        });
+        const text = await res.text();
+        let data; try{ data = JSON.parse(text); }
+        catch(e){ console.error('Raw response:', text); notify('رد غير متوقع من الخادم'); return; }
+
+        if(!data.ok){ notify(data.error ? `خطأ: ${data.error}` : 'تعذّر الجلب'); return; }
+        if(!data.found){ notify('الطلب غير موجود'); return; }
+
         const o = data.order || {};
         $('status').value = String(o.status||'received');
         $('fullName').value = o.fullName||'';
@@ -185,14 +202,20 @@
         $('email').value = o.email||'';
         $('notes').value = o.notes||'';
         $('openTrack').href = trackUrl(oid);
+
+        sessionStorage.setItem('lastOrderId', oid);
         notify('تم الجلب ✅');
-      }catch(err){ console.error(err); notify('خطأ اتصال'); }
+      }catch(err){
+        console.error(err);
+        notify('خطأ اتصال (تحقق من نشر الويب آب)');
+      }
     }
 
-    // حفظ/تحديث
+    // حفظ/تحديث (مع مهلة وقراءة رسالة الخطأ)
     async function saveOrder(){
       const oid = $('orderId').value.trim();
       if(!oid){ notify('رقم الطلب مطلوب'); return; }
+
       const payload = {
         token: WEB_APP_TOKEN,
         orderId: oid,
@@ -202,23 +225,40 @@
         email: $('email').value.trim(),
         notes: $('notes').value.trim()
       };
+
+      const btn = $('saveBtn'); const old = btn.textContent; btn.disabled = true; btn.textContent = 'جارٍ الحفظ…';
+
+      const ctl = new AbortController(); const timeout = setTimeout(()=>ctl.abort(), 12000);
+
       try{
         const res = await fetch(WEB_APP_URL, {
-          method: 'POST', mode: 'cors',
+          method: 'POST', mode: 'cors', signal: ctl.signal,
           headers: { 'Content-Type': 'application/json', 'x-shlool-key': WEB_APP_TOKEN },
           body: JSON.stringify(payload)
         });
-        const out = await res.json();
-        if(!out.ok){ notify('فشل الحفظ'); return; }
+        clearTimeout(timeout);
+        const text = await res.text();
+        let out; try{ out = JSON.parse(text); }
+        catch(e){ console.error('Raw response:', text); notify('رد غير متوقع من الخادم'); return; }
+
+        if(!out.ok){ notify(out.error ? `فشل الحفظ: ${out.error}` : 'فشل الحفظ'); return; }
+
+        sessionStorage.setItem('lastOrderId', oid);
         notify('تم الحفظ ✅');
-      }catch(err){ console.error(err); notify('خطأ اتصال'); }
+      }catch(err){
+        if(err.name === 'AbortError'){ notify('انتهت المهلة — تحقق من الاتصال'); }
+        else{ console.error(err); notify('خطأ اتصال'); }
+      }finally{
+        btn.disabled = false; btn.textContent = old;
+      }
     }
 
-    // أزرار الحالة السريعة
+    // أزرار الحالة السريعة (تغيّر + حفظ + جلب للتأكيد)
     document.querySelectorAll('[data-status]').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
+      btn.addEventListener('click', async ()=>{
         $('status').value = btn.dataset.status;
-        saveOrder();
+        await saveOrder();
+        loadOrder();
       });
     });
 
@@ -237,7 +277,8 @@
     });
 
     $('openTrack').addEventListener('click', (e)=>{
-      const oid = $('orderId').value.trim(); if(!oid){ e.preventDefault(); notify('أدخل الرقم'); }
+      const oid = $('orderId').value.trim();
+      if(!oid){ e.preventDefault(); notify('أدخل الرقم'); }
       else{ $('openTrack').href = trackUrl(oid); }
     });
 
