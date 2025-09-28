@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>تفاصيل طلبك — Shlool Web</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
+  <meta name="color-scheme" content="dark light">
+  <style>
+    :root{
+      --bg:#0f1115; --card:#171a21; --text:#e9ecf1; --muted:#b7c0cc; --blue:#0a84ff; --max:1050px;
+      --shadow:0 12px 36px rgba(0,0,0,.45); --radius:18px; --border:rgba(255,255,255,.08);
+      --accent: var(--blue);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial; color:var(--text);
+      background:
+        radial-gradient(1400px 900px at 75% -200px, rgba(64,179,255,.12), transparent 60%),
+        linear-gradient(180deg, #0c0e13, var(--bg));
+    }
+
+    /* شريط علوي فاخر */
+    .topbar{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background:linear-gradient(90deg, color-mix(in oklab, var(--accent) 22%, transparent), transparent);
+      border-bottom:1px solid var(--border);
+      padding:10px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:800}
+    .pill{display:inline-flex; align-items:center; gap:8px; font-weight:800; padding:6px 10px; border-radius:999px;
+      background:rgba(255,255,255,.06); border:1px solid var(--border); color:#fff; font-size:14px}
+
+    .wrap{max-width:var(--max); margin:auto; padding:28px 20px 40px}
+    .panel{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow)}
+    h1{margin:0 0 14px; font-size:clamp(26px,4vw,38px)}
+    h2{margin:0 0 12px; font-size:clamp(20px,3vw,26px)}
+    p{color:var(--muted); margin:0 0 16px}
+
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width:860px){ .grid{grid-template-columns:1fr} }
+    .row{display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:rgba(255,255,255,.02)}
+    .key{min-width:170px; font-weight:800; color:#fff}
+    .val{color:var(--muted); overflow-wrap:anywhere}
+
+    .btns{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
+    .btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid var(--border);
+         background:linear-gradient(135deg,var(--accent),color-mix(in oklab, var(--accent) 60%, #40b3ff)); color:#fff; font-weight:800; text-decoration:none; box-shadow:var(--shadow); cursor:pointer}
+    .btn.ghost{background:transparent; color:var(--text)}
+    .btn.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+
+    .mono{font-family:ui-monospace,Menlo,Consolas,monospace; white-space:pre-wrap; background:#101218; padding:12px; border-radius:12px; border:1px solid var(--border)}
+
+    /* لوحة الشكر الملوّنة */
+    .thanks{position:relative; overflow:hidden}
+    .thanks::before{
+      content:""; position:absolute; inset:-2px; z-index:0;
+      background: radial-gradient(600px 300px at 120% -40%, color-mix(in oklab, var(--accent) 25%, transparent), transparent 60%),
+                  radial-gradient(600px 300px at -20% 140%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 60%);
+      pointer-events:none;
+    }
+    .thanks > *{position:relative; z-index:1}
+
+    /* تايملاين أفقي */
+    .timeline{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:10px}
+    .t-step{display:flex; flex-direction:column; align-items:center; gap:8px; padding:12px; border-radius:14px; border:1px dashed var(--border); background:rgba(255,255,255,.03)}
+    .t-dot{width:14px; height:14px; border-radius:50%; border:2px solid var(--border); background:transparent}
+    .t-step.active{border-style:solid; background:color-mix(in oklab, var(--accent) 14%, transparent)}
+    .t-step.active .t-dot{background:var(--accent); border-color:var(--accent)}
+    .t-label{font-size:13px; color:var(--muted); text-align:center}
+
+    /* بطاقة QR */
+    .qr-card{display:flex; align-items:center; gap:16px; padding:14px; border:1px solid var(--border); border-radius:14px; background:rgba(255,255,255,.03)}
+    .qr-box{width:140px; height:140px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:12px}
+
+    /* Toast */
+    .toast{
+      position:fixed; inset:auto 20px 20px auto; z-index:50;
+      background:#0e1117; color:#fff; border:1px solid var(--border); border-radius:12px;
+      padding:10px 14px; box-shadow:var(--shadow); opacity:0; transform:translateY(8px); pointer-events:none; transition:opacity .25s, transform .25s;
+    }
+    .toast.show{opacity:1; transform:translateY(0)}
+  </style>
+</head>
+<body>
+  <!-- شريط علوي -->
+  <div class="topbar">
+    <div class="brand">
+      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in oklab,var(--accent) 25%, transparent)"></span>
+      Shlool Web
+    </div>
+    <div class="pill">طلبك رقم: <span id="topOrder">—</span>
+      <button id="copyIdBtn" class="btn ghost mono" style="padding:6px 10px;margin-inline-start:6px">نسخ</button>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <!-- تفاصيل الطلب -->
+    <section class="panel" aria-labelledby="detailsTitle">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
+        <h1 id="detailsTitle" style="margin-bottom:0">تفاصيل الطلب</h1>
+        <div class="pill" title="رقم الطلب">رقم الطلب: <span id="orderId">—</span></div>
+      </div>
+      <p>راجع الملخّص أدناه. تقدر تنسخه أو تطبعه لو حبيت.</p>
+
+      <div class="grid" id="detailsGrid" hidden></div>
+
+      <div style="margin-top:12px">
+        <h2 style="margin-top:0">الملخّص النصّي</h2>
+        <div id="summaryBox" class="mono">—</div>
+        <div class="btns">
+          <button class="btn mono" id="copySummaryBtn">نسخ الملخص</button>
+          <button class="btn ghost" id="printBtn">طباعة</button>
+          <button class="btn ghost" id="downloadBtn">تنزيل TXT</button>
+          <a class="btn ghost" href="contact.html">تعديل الطلب</a>
+        </div>
+      </div>
+
+      <p class="note">* لو ما ظهر شيء، تأكد إنك أرسلت الطلب من صفحة التواصل نفسها.</p>
+    </section>
+
+    <!-- رسالة الشكر -->
+    <section class="panel thanks" id="thanksPanel" style="margin-top:18px">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
+        <h2 style="margin:0; color:inherit">شكرًا ✨</h2>
+        <div class="pill" aria-hidden="true">#<span id="orderIdMirror">—</span></div>
+      </div>
+      <p id="thanksText" style="color:inherit">تشرفنا فيك! استلمنا تفاصيل طلبك، ورح نراجعها ونرجع لك بأقرب وقت.</p>
+
+      <!-- تايملاين -->
+      <div class="timeline" id="timeline">
+        <div class="t-step" data-step="1"><div class="t-dot"></div><div class="t-label">📥 استلام</div></div>
+        <div class="t-step" data-step="2"><div class="t-dot"></div><div class="t-label">🔍 مراجعة</div></div>
+        <div class="t-step" data-step="3"><div class="t-dot"></div><div class="t-label">💬 عرض السعر</div></div>
+        <div class="t-step" data-step="4"><div class="t-dot"></div><div class="t-label">🚀 بدء التنفيذ</div></div>
+      </div>
+
+      <!-- أزرار تواصل منسّقة -->
+      <div class="btns" style="margin-top:12px">
+        <a class="btn" href="index.html">العودة للرئيسية</a>
+        <a class="btn" id="whBtn" target="_blank" rel="noopener">إرسال عبر واتساب</a>
+        <a class="btn ghost" id="mailBtn" target="_blank" rel="noopener">إرسال عبر الإيميل</a>
+        <button class="btn ghost" id="shareBtn">مشاركة رابط التتبّع</button>
+      </div>
+
+      <!-- QR + رابط تتبّع -->
+      <div class="qr-card" style="margin-top:14px">
+        <div class="qr-box" id="qrcode">QR</div>
+        <div style="display:flex; flex-direction:column; gap:8px; flex:1">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+            <a id="trackLink" class="btn ghost" href="#" target="_blank" rel="noopener">فتح صفحة التتبّع</a>
+            <button class="btn ghost mono" id="copyTrackBtn">نسخ الرابط</button>
+          </div>
+          <small class="note">امسح الـ QR لتفتح صفحة التتبّع مباشرة.</small>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- مكتبة توليد QR خفيفة -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script>
+    /* ===== أدوات مساعدة للألوان/التباين ===== */
+    function sanitizeColor(input){
+      if(!input) return null;
+      const v = String(input).trim();
+      if(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)) return v;
+      if(/^[a-zA-Z]+$/.test(v)) return v;
+      return null;
+    }
+    function hexToRgb(hex){
+      hex = hex.replace('#','');
+      if(hex.length===3){ hex = hex.split('').map(c=>c+c).join(''); }
+      const num = parseInt(hex,16);
+      return { r:(num>>16)&255, g:(num>>8)&255, b:num&255 };
+    }
+    function toRgbaStr(color, alpha){
+      if(color.startsWith('#')){
+        const {r,g,b} = hexToRgb(color);
+        return `rgba(${r},${g},${b},${alpha})`;
+      }
+      return color;
+    }
+    function relativeLuminance({r,g,b}){
+      const srgb = [r,g,b].map(v=>{
+        v/=255;
+        return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4);
+      });
+      return 0.2126*srgb[0] + 0.7152*srgb[1] + 0.0722*srgb[2];
+    }
+    function getContrastText(color){
+      if(color.startsWith('#')){
+        const rgb = hexToRgb(color);
+        const L = relativeLuminance(rgb);
+        return (L > 0.35) ? '#000' : '#fff';
+      }
+      const lightNames = ['yellow','gold','khaki','lightyellow','lemonchiffon','lightgoldenrodyellow','papayawhip','moccasin'];
+      return lightNames.includes(color.toLowerCase()) ? '#000' : '#fff';
+    }
+
+    /* ===== Toast ===== */
+    const toastEl = document.getElementById('toast');
+    let toastTimer;
+    function showToast(msg){
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=> toastEl.classList.remove('show'), 2400);
+    }
+
+    /* ===== توليد رقم طلب ===== */
+    function generateOrderId(){
+      // مثال: SH-250928-4F7C2
+      const d = new Date();
+      const y = String(d.getFullYear()).slice(-2);
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      const rand = (()=>{ 
+        const bytes = new Uint8Array(3); crypto.getRandomValues(bytes);
+        return Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase().slice(0,5);
+      })();
+      return `SH-${y}${m}${day}-${rand}`;
+    }
+
+    /* ===== قراءة بيانات الطلب من sessionStorage ===== */
+    const summary = sessionStorage.getItem('orderSummary') || '—';
+    const dataRaw = sessionStorage.getItem('orderData');
+    const data = dataRaw ? JSON.parse(dataRaw) : null;
+
+    /* ===== رقم الطلب (توليد + حفظ) ===== */
+    let orderId = sessionStorage.getItem('orderId');
+    if(!orderId){ orderId = generateOrderId(); sessionStorage.setItem('orderId', orderId); }
+
+    document.getElementById('orderId').textContent = orderId;
+    document.getElementById('orderIdMirror').textContent = orderId;
+    document.getElementById('topOrder').textContent = orderId;
+
+    /* ===== الملخّص النصّي ===== */
+    const summaryBox = document.getElementById('summaryBox');
+    const summaryWithId = `رقم الطلب: ${orderId}\n\n${summary}`;
+    summaryBox.textContent = summaryWithId;
+
+    /* ===== شبكة التفاصيل ===== */
+    const grid = document.getElementById('detailsGrid');
+    const labels = {
+      orderId:'رقم الطلب',
+      fullName:'الاسم الكامل', phone:'الهاتف/واتساب', email:'البريد الإلكتروني',
+      business:'اسم النشاط', industry:'القطاع', currentSite:'موقع حالي',
+      siteType:'نوع الموقع', features:'ميزات مطلوبة', stylePref:'ستايل التصميم',
+      brandColor:'لون العلامة', assetsLink:'رابط الملفات',
+      ref1:'موقع يعجبك (1)', ref2:'موقع يعجبك (2)',
+      contactTime:'وقت التواصل', contactPref:'طريقة التواصل', notes:'ملاحظات'
+    };
+    function addRow(key, value){
+      const wrap = document.createElement('div'); wrap.className='row';
+      const k = document.createElement('div'); k.className='key'; k.textContent = key;
+      const v = document.createElement('div'); v.className='val'; v.textContent = value;
+      wrap.appendChild(k); wrap.appendChild(v); grid.appendChild(wrap);
+    }
+    let entries = [];
+    entries.push(['رقم الطلب', orderId]);
+    if(data){
+      const mapped = Object.entries(labels)
+        .filter(([k]) => k!=='orderId')
+        .map(([k,lab]) => [lab, (k==='features' && Array.isArray(data[k])) ? data[k].join('، ') : (data[k]||'—')])
+        .filter(([,val]) => String(val).trim() !== '');
+      entries = entries.concat(mapped);
+      entries.forEach(([lab,val])=> addRow(lab, val));
+      if(entries.length){ grid.hidden = false; }
+    } else {
+      entries.forEach(([lab,val])=> addRow(lab, val));
+      grid.hidden = false;
+    }
+
+    /* ===== تلوين عام حسب brandColor ===== */
+    const brand = sanitizeColor(data?.brandColor);
+    const accent = brand || getComputedStyle(document.documentElement).getPropertyValue('--blue').trim();
+    document.documentElement.style.setProperty('--accent', accent);
+
+    /* تلوين لوحة الشكر + تباين النص */
+    const thanksPanel = document.getElementById('thanksPanel');
+    const textColor = (accent && accent.startsWith('#')) ? getContrastText(accent) : '#fff';
+    const overlay1 = (accent && accent.startsWith('#')) ? toRgbaStr(accent, 0.25) : 'rgba(64,179,255,0.20)';
+    const overlay2 = (accent && accent.startsWith('#')) ? toRgbaStr(accent, 0.45) : 'rgba(10,132,255,0.35)';
+    thanksPanel.style.background = `linear-gradient(135deg, ${overlay1}, ${overlay2}), var(--card)`;
+    thanksPanel.style.borderColor = accent;
+    thanksPanel.style.color = textColor;
+    document.getElementById('thanksText').style.color = textColor;
+
+    /* ===== واتساب + إيميل مع إيموجي ===== */
+    const businessPhone = '962790986908'; // عدّل الرقم بدون +
+    const orderShort = (summary || '').split('\n').slice(0,6).join('\n');
+    const waMsg = `مرحبًا 👋\nأرسل لكم تفاصيل طلبي.\n\n🧾 رقم الطلب: ${orderId}\n\n${summary}\n\n— مقتطف —\n${orderShort}`;
+    const waLink = `https://wa.me/${businessPhone}?text=${encodeURIComponent(waMsg)}`;
+    document.getElementById('whBtn').href = waLink;
+
+    const mailTo = (data?.email && String(data.email).trim()) || '';
+    const subject = `طلب جديد — ${orderId}`;
+    const body = `مرحبًا 👋\n\nتفاصيل الطلب:\n🧾 رقم الطلب: ${orderId}\n\n${summary}\n\nشكرًا.`;
+    const mailLink = `mailto:${mailTo}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    document.getElementById('mailBtn').href = mailLink;
+
+    /* ===== توليد رابط التتبّع + QR ===== */
+    const basePath = location.pathname.replace(/[^/]+$/, '');
+    const trackUrl = `${location.origin}${basePath}track.html?id=${encodeURIComponent(orderId)}`;
+    const trackEl = document.getElementById('trackLink');
+    trackEl.href = trackUrl;
+
+    // QR
+    try{
+      document.getElementById('qrcode').textContent = '';
+      new QRCode(document.getElementById("qrcode"), {
+        text: trackUrl,
+        width: 128,
+        height: 128,
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }catch{ document.getElementById('qrcode').textContent = 'QR غير متاح'; }
+
+    /* ===== تايملاين (نشّط الخطوة حسب حالة مخزّنة محليًا) ===== */
+    const mockStatus = (orderId && sessionStorage.getItem(`status:${orderId}`)) || 'received';
+    const stepMap = { received:1, reviewing:2, quoted:3, started:4 };
+    const activeStep = stepMap[mockStatus] || 1;
+    document.querySelectorAll('.t-step').forEach(el=>{
+      const s = Number(el.dataset.step);
+      if(s <= activeStep) el.classList.add('active');
+    });
+
+    /* ===== أزرار: نسخ/طباعة/تنزيل/مشاركة ===== */
+    document.getElementById('copySummaryBtn').addEventListener('click', async ()=>{
+      try{ await navigator.clipboard.writeText(summaryWithId); showToast('تم نسخ الملخّص ✅'); }
+      catch{ showToast('تعذّر النسخ. انسخ يدويًا.'); }
+    });
+    document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+    document.getElementById('downloadBtn').addEventListener('click', ()=>{
+      const blob=new Blob([summaryWithId], {type:'text/plain;charset=utf-8'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download=`order-${orderId}.txt`; a.click();
+      setTimeout(()=>URL.revokeObjectURL(url), 500);
+      showToast('تم تنزيل الملف 📄');
+    });
+
+    document.getElementById('copyIdBtn').addEventListener('click', async ()=>{
+      try{ await navigator.clipboard.writeText(orderId); showToast('نُسخ رقم الطلب 🧾'); }
+      catch{ showToast('تعذّر النسخ.'); }
+    });
+
+    document.getElementById('copyTrackBtn').addEventListener('click', async ()=>{
+      try{ await navigator.clipboard.writeText(trackUrl); showToast('تم نسخ رابط التتبّع 🔗'); }
+      catch{ showToast('تعذّر النسخ.'); }
+    });
+
+    document.getElementById('shareBtn').addEventListener('click', async ()=>{
+      if(navigator.share){
+        try{
+          await navigator.share({ title:`تتبّع الطلب ${orderId}`, text:`رابط تتبّع طلبي: ${orderId}`, url:trackUrl });
+        }catch{}
+      }else{
+        try{ await navigator.clipboard.writeText(trackUrl); showToast('لا يدعم المشاركة. نُسخ الرابط ✅'); }
+        catch{ showToast('انسخ الرابط يدويًا: ' + trackUrl); }
+      }
+    });
+
+    // عكس رقم الطلب في أعلى الصفحة
+    document.getElementById('topOrder').textContent = orderId;
+  </script>
+</body>
+</html>

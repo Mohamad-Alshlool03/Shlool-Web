@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>تتبّع الطلب — Shlool Web</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#0f1115; --card:#171a21; --text:#e9ecf1; --muted:#b7c0cc; --border:rgba(255,255,255,.08); --radius:18px; --accent:#0a84ff; --max:900px }
+    body{
+      margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial; color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 85% -120px, color-mix(in oklab,var(--accent) 18%, transparent), transparent 60%),
+        linear-gradient(180deg,#0c0e13,var(--bg));
+    }
+    .topbar{
+      position:sticky; top:0; z-index:10; backdrop-filter: blur(10px);
+      background:linear-gradient(90deg, color-mix(in oklab, var(--accent) 22%, transparent), transparent);
+      border-bottom:1px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:800}
+    .pill{display:inline-flex; align-items:center; gap:8px; font-weight:800; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid var(--border)}
+    .wrap{max-width:var(--max); margin:auto; padding:28px 20px 40px}
+    .panel{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px}
+    h1{margin:0 0 10px; font-size:clamp(24px,4vw,34px)}
+    p{color:var(--muted)}
+    .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:14px}
+    .step{padding:12px; border:1px dashed var(--border); border-radius:12px; background:rgba(255,255,255,.03); text-align:center}
+    .step.active{border-style:solid; background:color-mix(in oklab, var(--accent) 14%, transparent)}
+    .badge{display:inline-flex; gap:8px; font-weight:800; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid var(--border)}
+    .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid var(--border);
+         background:linear-gradient(135deg,var(--accent),color-mix(in oklab, var(--accent) 60%, #40b3ff)); color:#fff; font-weight:800; text-decoration:none; cursor:pointer}
+    .btn.ghost{background:transparent; color:var(--text)}
+    .toast{position:fixed; inset:auto 20px 20px auto; background:#0e1117; border:1px solid var(--border); border-radius:12px; padding:10px 14px; opacity:0; transform:translateY(8px); transition:.25s; box-shadow:0 12px 36px rgba(0,0,0,.45)}
+    .toast.show{opacity:1; transform:translateY(0)}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in oklab,var(--accent) 25%, transparent)"></span>
+      Shlool Web
+    </div>
+    <div class="pill">رقم الطلب: <span id="oidTop">—</span></div>
+  </div>
+
+  <main class="wrap">
+    <section class="panel">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
+        <h1 style="margin:0">تتبّع الطلب</h1>
+        <div class="badge">#<span id="oid">—</span></div>
+      </div>
+      <p id="state">جاري جلب حالة الطلب…</p>
+
+      <div class="steps" id="steps" hidden>
+        <div class="step" data-step="1">📥 تم استلام الطلب</div>
+        <div class="step" data-step="2">🔍 تحت المراجعة</div>
+        <div class="step" data-step="3">📝 تم إرسال عرض السعر</div>
+        <div class="step" data-step="4">🚀 بدأ التنفيذ</div>
+      </div>
+
+      <div class="btns">
+        <a class="btn" href="index.html">الرئيسية</a>
+        <button class="btn ghost" id="copyUrl">نسخ رابط هذه الصفحة</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Toast
+    const toast = document.getElementById('toast'); let tTimer;
+    function notify(msg){ toast.textContent = msg; toast.classList.add('show'); clearTimeout(tTimer); tTimer = setTimeout(()=>toast.classList.remove('show'), 2200); }
+
+    // قراءة id من الرابط
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get('id') || '—';
+    document.getElementById('oid').textContent = orderId;
+    document.getElementById('oidTop').textContent = orderId;
+
+    // لون العلامة من thankyou (إن وُجد)
+    try{
+      const stored = sessionStorage.getItem('orderData');
+      if(stored){
+        const brand = JSON.parse(stored)?.brandColor;
+        if(brand && /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$|^[a-zA-Z]+$/.test(String(brand))){
+          document.documentElement.style.setProperty('--accent', String(brand));
+        }
+      }
+    }catch{}
+
+    // حالة مؤقتة (بدّل لاحقًا بنداء API)
+    const mockStatus = (orderId && sessionStorage.getItem(`status:${orderId}`)) || 'received';
+    const map = {
+      received: {text:'تم استلام الطلب ✅', step:1},
+      reviewing:{text:'طلبك تحت المراجعة 🔍', step:2},
+      quoted:   {text:'تم إرسال عرض السعر 📝', step:3},
+      started:  {text:'بدأ التنفيذ 🚀', step:4}
+    };
+    const st = map[mockStatus] || map.received;
+
+    document.getElementById('state').textContent = st.text;
+    document.getElementById('steps').hidden = false;
+    document.querySelectorAll('.step').forEach(el=>{
+      const s = Number(el.dataset.step);
+      if(s <= st.step){ el.classList.add('active'); }
+    });
+
+    // نسخ رابط الصفحة
+    document.getElementById('copyUrl').addEventListener('click', async ()=>{
+      try{ await navigator.clipboard.writeText(location.href); notify('تم نسخ الرابط 🔗'); }
+      catch{ notify('تعذّر النسخ.'); }
+    });
+
+    // ملاحظة: في النسخة الفعلية، اجلب الحالة من السيرفر: GET /api/orders/:id
+  </script>
+</body>
+</html>
