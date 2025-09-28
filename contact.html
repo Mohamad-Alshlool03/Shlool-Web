@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>اطلب موقعك — Shlool Web</title>
   <meta name="description" content="اطلب موقعك الآن: اختر الميزات والمدة. نرجع لك بعرض خلال وقت قصير.">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
-
   <style>
     :root{
       --bg:#1f1f1f; --card:#262626; --surface:#202020;
@@ -20,7 +18,6 @@
       --radius:16px; --max:1100px;
     }
     *{box-sizing:border-box}
-    html,body{height:100%; overflow-x:hidden; /* ← يمنع الانزلاق الجانبي */ scrollbar-gutter:stable both-edges;}
     body{
       margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
       background:
@@ -28,13 +25,14 @@
         linear-gradient(180deg, #1b1b1b, var(--bg));
       color:var(--text); line-height:1.7;
     }
-    img,svg{max-width:100%; height:auto; vertical-align:middle}
     a{color:var(--blue); text-decoration:none}
     .wrap{max-width:var(--max); margin:auto; padding:28px 20px}
 
     header{
-      position:sticky; top:0; backdrop-filter:saturate(1.2) blur(8px);
-      background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.0));
+      position:sticky; top:0;
+      -webkit-backdrop-filter:saturate(1.2) blur(8px);
+      backdrop-filter:saturate(1.2) blur(8px);
+      background:rgba(0,0,0,.45);
       border-bottom:1px solid rgba(255,255,255,.08);
       z-index:40; box-shadow:0 6px 20px rgba(0,0,0,.25);
     }
@@ -42,11 +40,13 @@
     .logo{display:flex; align-items:center; gap:10px; color:var(--text); font-weight:800}
     .logo-img{height:52px; width:auto; border-radius:10px; box-shadow:var(--shadow); display:block}
     .nav-gap{flex:1}
+
     .btn{
-      display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px;
-      background:linear-gradient(135deg,var(--blue),var(--blue-2)); color:#fff; font-weight:700;
-      box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .2s ease;
-      border:0; cursor:pointer; text-align:center; min-width:0;
+      display:inline-flex; align-items:center; gap:8px;
+      padding:12px 16px; border-radius:12px;
+      background:linear-gradient(135deg,var(--blue),var(--blue-2));
+      color:#fff; font-weight:700; box-shadow:var(--shadow);
+      transition:transform .15s ease, box-shadow .2s ease; border:0; cursor:pointer; text-align:center
     }
     .btn:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(10,132,255,.25)}
     .btn-outline{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.16)}
@@ -55,30 +55,18 @@
     .btn-ig{background:linear-gradient(135deg,var(--ig4),var(--ig3),var(--ig2),var(--ig1)); color:#fff}
     .btn-ig:hover{box-shadow:0 16px 40px rgba(221,42,123,.28)}
 
-    /* ===== الحِيرو: منع أي تمدد أفقي */
-    .hero{
-      display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); /* ← minmax(0,…) */
-      gap:24px; align-items:center; padding-block:28px; overflow-x:clip;
-    }
-    .hero > *{min-width:0;} /* ← مهم جدًا */
-
+    .hero{display:grid; grid-template-columns:1.05fr .95fr; gap:24px; align-items:center; padding-block:28px}
     .title{font-size:clamp(28px, 4vw, 44px); line-height:1.2; margin:0 0 10px; font-weight:800}
     .subtitle{color:var(--muted); font-size:clamp(16px,2.2vw,18px); margin:0 0 14px}
     .badge{
-      display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
-      background:rgba(10,132,255,.12); color:var(--blue); font-weight:700; margin-bottom:12px;
-      border:1px solid rgba(64,179,255,.25)
-    }
-    .panel{
-      background:var(--card); border:1px solid rgba(255,255,255,.06);
-      border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); overflow-x:clip;
+      display:inline-flex; align-items:center; gap:8px; padding:8px 12px;
+      border-radius:999px; background:rgba(10,132,255,.12); color:var(--blue);
+      font-weight:700; margin-bottom:12px; border:1px solid rgba(64,179,255,.25)
     }
 
-    /* grids العامة — استعمال minmax(0,1fr) */
-    .grid-2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; overflow-x:clip;}
-    .grid-3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; overflow-x:clip;}
-    .grid-2 > *, .grid-3 > *{min-width:0;}
-
+    .panel{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow) }
+    .grid-2{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+    .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
     @media (max-width:900px){
       .hero{grid-template-columns:1fr}
       .grid-2,.grid-3{grid-template-columns:1fr}
@@ -87,28 +75,24 @@
     label{font-weight:700; margin-bottom:6px; display:block}
     input, select, textarea{
       width:100%; padding:12px 12px; border-radius:12px; background:#1f1f1f;
-      border:1px solid rgba(255,255,255,.08); color:var(--text); font:inherit;
-      outline:none; transition:border-color .15s ease, box-shadow .15s ease; min-width:0;
+      border:1px solid rgba(255,255,255,.08); color:var(--text); font:inherit; outline:none;
+      transition:border-color .15s ease, box-shadow .15s ease;
     }
     input:focus, select:focus, textarea:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(10,132,255,.15)}
     .hint{color:var(--muted); font-size:13px; margin-top:6px}
 
-    /* check list */
-    .choices{
-      display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; overflow-x:clip;
-    }
+    /* ===== check list (مصمم/متناسق) ===== */
+    .choices{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
     .choices label{
       font-weight:600; display:flex; align-items:center; gap:10px; line-height:1.6;
-      padding:10px 12px; border:1px solid rgba(255,255,255,.12); border-radius:10px;
-      background:rgba(255,255,255,.02); min-width:0;
+      padding:10px 12px; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.02);
     }
-    .choices input[type="checkbox"]{width:18px; height:18px; accent-color:var(--blue)}
+    .choices input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--blue); }
 
     .actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-start; margin-top:14px}
-    .actions > *{min-width:0;}
 
     /* Estimator card */
-    .estimator{display:flex; align-items:center; justify-content:space-between; gap:14px; overflow-x:clip;}
+    .estimator{display:flex; align-items:center; justify-content:space-between; gap:14px}
     .estimate-pill{
       padding:8px 12px; border-radius:999px; background:rgba(10,132,255,.12);
       border:1px solid rgba(64,179,255,.25); color:#fff; font-weight:800
@@ -116,24 +100,30 @@
     .small{color:var(--muted); font-size:13px}
 
     footer{
-      background:var(--surface);
-      border-top:1px solid rgba(255,255,255,.08);
-      box-shadow:0 -6px 20px rgba(0,0,0,.25);
-      margin-top:40px;
+      background:var(--surface); border-top:1px solid rgba(255,255,255,.08);
+      box-shadow:0 -6px 20px rgba(0,0,0,.25); margin-top:40px;
     }
-    .footer-inner{
-      max-width:var(--max); margin:auto; padding:22px 20px;
-      display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; overflow-x:clip;
-    }
+    .footer-inner{max-width:var(--max); margin:auto; padding:22px 20px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
     .brand{opacity:.7}
     .dev{font-weight:800}
 
     .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
     .reveal.show{opacity:1; transform:none}
 
-    /* موافقة الخصوصية */
+    /* موافقة الخصوصية — محاذاة متناسقة */
     .agree{display:inline-flex; align-items:center; gap:10px}
     .agree input[type="checkbox"]{width:18px; height:18px; accent-color:var(--blue)}
+
+    /* تحسينات موبايل لمنع “التكسّر” */
+    html, body { overflow-x: hidden; }
+    img, video, canvas { max-width: 100%; height: auto; }
+
+    @media (max-width:480px){
+      .nav{ padding:10px 14px; }
+      .logo-img{ height:44px; }
+      .actions{ gap:8px; }
+      .btn{ padding:12px 14px; }
+    }
   </style>
 </head>
 <body>
@@ -154,7 +144,6 @@
         <div class="badge">طلب موقع جديد ✨</div>
         <h1 class="title">خلّينا نبني لك موقع <span style="color:var(--blue)">يناسب بزنسك</span></h1>
         <p class="subtitle">عبّي الطلب أدناه — نراجع التفاصيل ونرجع لك بعرض سعر وخطة عمل خلال وقت قصير.</p>
-
         <div class="actions" style="margin-top:10px">
           <a class="btn btn-whatsapp" href="https://wa.me/962790986908" target="_blank" rel="noopener">تواصل واتساب</a>
           <a class="btn btn-ig" href="https://instagram.com/shlool_web" target="_blank" rel="noopener" aria-label="التواصل عبر إنستجرام">إنستجرام</a>
@@ -179,7 +168,7 @@
       <p class="hint">الحقول المعلَّمة بـ (*) مطلوبة. الإرسال يتم عبر واتساب أو بريد — بدون أي باك-إند.</p>
 
       <form id="siteForm" novalidate>
-        <!-- HoneyPot -->
+        <!-- HoneyPot لمكافحة السبام -->
         <input id="hp" name="website" type="text" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
 
         <!-- معلومات أساسية -->
@@ -358,25 +347,36 @@
   <script>
     // ظهور ناعم
     const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target);} });
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); }
+      });
     },{threshold:.08});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
+    /* ===== أدوات ===== */
     const $ = id => document.getElementById(id);
 
+    // قراءة الميزات المختارة
     function getSelectedFeatures(){
       return Array.from(document.querySelectorAll('#featureChoices input:checked')).map(c=>c.value);
     }
 
+    // توصية تلقائية للباقة والسعر
     function getRecommendation(){
       const f = getSelectedFeatures();
       let plan = 'الأساسية', price = '70 د.أ', reason = 'موقع تعريفي وميزات أساسية.';
       if (f.includes('دفع أونلاين')) {
-        plan = 'المتقدمة'; price = '270 د.أ'; reason = 'يتضمن دفع أونلاين وتكاملات.';
+        plan = 'المتقدمة';
+        price = '270 د.أ';
+        reason = 'يتضمن دفع أونلاين وتكاملات.';
       } else {
         const group = ['منيو أونلاين وQR','حجز مواعيد إلى الإيميل','طلبات أونلاين بسيطة','معرض صور/أعمال','مدونة/مقالات','تعدد اللغات','تأمين دومين واستضافة'];
         const count = f.filter(x=>group.includes(x)).length;
-        if (count >= 2) { plan = 'برو'; price = '170 د.أ'; reason = `اخترت ${count} ميزات متقدمة.`; }
+        if (count >= 2) {
+          plan = 'برو';
+          price = '170 د.أ';
+          reason = `اخترت ${count} ميزات متقدمة.`;
+        }
       }
       return {plan, price, reason};
     }
@@ -392,6 +392,7 @@
     });
     updateEstimator();
 
+    // التقاط UTM من العنوان
     const utm = (() => {
       const p = new URLSearchParams(location.search);
       const keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'];
@@ -400,6 +401,7 @@
       return obj;
     })();
 
+    // ملخص الطلب (سليم نحويًا)
     function buildSummary() {
       const name = $('fullName').value.trim();
       const phone = $('phone').value.trim();
@@ -411,36 +413,40 @@
       const features = getSelectedFeatures();
       const contactPref = $('contactPref').value;
       const notes = $('notes').value.trim();
-
       const contactTime = $('contactTime').value.trim();
       const stylePref = $('stylePref').value;
       const brandColor = $('brandColor').value;
       const assetsLink = $('assetsLink').value.trim();
       const refs = [ $('ref1').value.trim(), $('ref2').value.trim() ].filter(Boolean);
-
       const rec = getRecommendation();
 
-      const lines = [
-        'طلب موقع جديد:',
-        `الاسم: ${name}`,
-        `الهاتف/واتساب: ${phone}`,
-        `البريد: ${email}`,
-        business ? `النشاط: ${business}` : null,
-        industry ? `القطاع: ${industry}` : null,
-        currentSite ? `موقع حالي: ${currentSite}` : null,
-        `نوع الموقع: ${siteType || '-'}`,
-        features.length ? `ميزات مطلوبة: ${features.join('، ')}` : null,
-        stylePref ? `ستايل التصميم: ${stylePref}` : null,
-        brandColor ? `لون العلامة: ${brandColor}` : null,
-        assetsLink ? `رابط الملفات: ${assetsLink}` : null,
-        refs.length ? `مواقع تعجب العميل: ${refs.join(' , ')}` : null,
-        contactTime ? `وقت التواصل المفضّل: ${contactTime}` : null,
-        contactPref ? `طريقة التواصل: ${contactPref}` : null,
-        `الباقة المقترحة: ${rec.plan} — سعر مبدئي: ${rec.price}`,
-        notes ? '\nملاحظات إضافية:\n' + notes : null,
-        Object.keys(utm).length ? '\nوسوم UTM:\n' + JSON.stringify(utm) : null
-      ].filter(Boolean);
-
+      const lines = [];
+      lines.push('طلب موقع جديد:');
+      lines.push(`الاسم: ${name}`);
+      lines.push(`الهاتف/واتساب: ${phone}`);
+      lines.push(`البريد: ${email}`);
+      if (business) lines.push(`النشاط: ${business}`);
+      if (industry) lines.push(`القطاع: ${industry}`);
+      if (currentSite) lines.push(`موقع حالي: ${currentSite}`);
+      lines.push(`نوع الموقع: ${siteType || '-'}`);
+      if (features.length) lines.push(`ميزات مطلوبة: ${features.join('، ')}`);
+      if (stylePref) lines.push(`ستايل التصميم: ${stylePref}`);
+      if (brandColor) lines.push(`لون العلامة: ${brandColor}`);
+      if (assetsLink) lines.push(`رابط الملفات: ${assetsLink}`);
+      if (refs.length) lines.push(`مواقع مرجعية: ${refs.join(' , ')}`);
+      if (contactTime) lines.push(`وقت التواصل المفضّل: ${contactTime}`);
+      if (contactPref) lines.push(`طريقة التواصل: ${contactPref}`);
+      lines.push(`الباقة المقترحة: ${rec.plan} — سعر مبدئي: ${rec.price}`);
+      if (notes) {
+        lines.push('');
+        lines.push('ملاحظات إضافية:');
+        lines.push(notes);
+      }
+      if (Object.keys(utm).length){
+        lines.push('');
+        lines.push('وسوم UTM:');
+        lines.push(JSON.stringify(utm));
+      }
       return lines.join('\n');
     }
 
@@ -455,12 +461,15 @@
           el.addEventListener('input', ()=> el.style.borderColor='rgba(255,255,255,.08)', {once:true});
         }
       });
+      // HoneyPot
       if (document.getElementById('hp').value.trim()){
-        ok = false; alert('تم إيقاف الإرسال (مرشح سبام).');
+        ok = false;
+        alert('تم إيقاف الإرسال (مرشح سبام).');
       }
       return ok;
     }
 
+    // إرسال عبر واتساب
     document.getElementById('siteForm').addEventListener('submit', function(e){
       e.preventDefault();
       if(!validateRequired()) return;
@@ -469,6 +478,7 @@
       window.open(url, '_blank');
     });
 
+    // إرسال عبر الإيميل
     document.getElementById('sendEmail').addEventListener('click', function(){
       if(!validateRequired()) return;
       const body = encodeURIComponent(buildSummary());
@@ -476,10 +486,15 @@
       window.location.href = `mailto:mshlool684@gmail.com?subject=${subject}&body=${body}`;
     });
 
+    // نسخ الملخص
     document.getElementById('copySummary').addEventListener('click', async function(){
       const txt = buildSummary();
-      try { await navigator.clipboard.writeText(txt); alert('تم نسخ الطلب إلى الحافظة ✅'); }
-      catch { alert('لم نتمكّن من النسخ تلقائيًا. انسخ يدويًا بعد تحديد النص.'); }
+      try {
+        await navigator.clipboard.writeText(txt);
+        alert('تم نسخ الطلب إلى الحافظة ✅');
+      } catch {
+        alert('لم نتمكّن من النسخ تلقائيًا. انسخ يدويًا بعد تحديد النص.');
+      }
     });
   </script>
 </body>
