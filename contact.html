@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>اطلب موقعك — Shlool Web</title>
   <meta name="description" content="اطلب موقعك الآن: اختر الميزات والمدة. نرجع لك بعرض خلال وقت قصير.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,6 +18,7 @@
       --radius:16px; --max:1100px;
     }
     *{box-sizing:border-box}
+    html, body { overflow-x: hidden; } /* يمنع أي تمرير أفقي */
     body{
       margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
       background:
@@ -25,6 +26,8 @@
         linear-gradient(180deg, #1b1b1b, var(--bg));
       color:var(--text); line-height:1.7;
     }
+    img, video, canvas { max-width: 100%; height: auto; }
+
     a{color:var(--blue); text-decoration:none}
     .wrap{max-width:var(--max); margin:auto; padding:28px 20px}
 
@@ -55,7 +58,10 @@
     .btn-ig{background:linear-gradient(135deg,var(--ig4),var(--ig3),var(--ig2),var(--ig1)); color:#fff}
     .btn-ig:hover{box-shadow:0 16px 40px rgba(221,42,123,.28)}
 
-    .hero{display:grid; grid-template-columns:1.05fr .95fr; gap:24px; align-items:center; padding-block:28px}
+    .hero{
+      display:grid; grid-template-columns:1.05fr .95fr;
+      gap:24px; align-items:stretch; padding-block:28px
+    }
     .title{font-size:clamp(28px, 4vw, 44px); line-height:1.2; margin:0 0 10px; font-weight:800}
     .subtitle{color:var(--muted); font-size:clamp(16px,2.2vw,18px); margin:0 0 14px}
     .badge{
@@ -67,9 +73,12 @@
     .panel{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow) }
     .grid-2{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
     .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
-    @media (max-width:900px){
-      .hero{grid-template-columns:1fr}
-      .grid-2,.grid-3{grid-template-columns:1fr}
+
+    /* ===== استجابة أفضل: حوّل لعمود واحد حتى 1200px ===== */
+    @media (max-width:1200px){
+      .hero{ grid-template-columns:1fr !important; }
+      .grid-2,.grid-3{ grid-template-columns:1fr !important; }
+      .wrap{ padding:24px 16px; }
     }
 
     label{font-weight:700; margin-bottom:6px; display:block}
@@ -81,7 +90,7 @@
     input:focus, select:focus, textarea:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(10,132,255,.15)}
     .hint{color:var(--muted); font-size:13px; margin-top:6px}
 
-    /* ===== check list (مصمم/متناسق) ===== */
+    /* ===== checklist متناسقة ===== */
     .choices{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
     .choices label{
       font-weight:600; display:flex; align-items:center; gap:10px; line-height:1.6;
@@ -113,10 +122,6 @@
     /* موافقة الخصوصية — محاذاة متناسقة */
     .agree{display:inline-flex; align-items:center; gap:10px}
     .agree input[type="checkbox"]{width:18px; height:18px; accent-color:var(--blue)}
-
-    /* تحسينات موبايل لمنع “التكسّر” */
-    html, body { overflow-x: hidden; }
-    img, video, canvas { max-width: 100%; height: auto; }
 
     @media (max-width:480px){
       .nav{ padding:10px 14px; }
@@ -401,7 +406,7 @@
       return obj;
     })();
 
-    // ملخص الطلب (سليم نحويًا)
+    // ملخص الطلب
     function buildSummary() {
       const name = $('fullName').value.trim();
       const phone = $('phone').value.trim();
