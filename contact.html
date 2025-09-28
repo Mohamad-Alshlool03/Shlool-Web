@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>اطلب موقعك — Shlool Web</title>
+  <title>اطلب موقعك — Shloول Web</title>
   <meta name="description" content="اطلب موقعك الآن: اختر الميزات والمدة. نرجع لك بعرض خلال وقت قصير.">
   <meta name="color-scheme" content="dark light">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -173,10 +173,6 @@
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_subject" value="طلب جديد — Shlool Web">
-        <!-- إرسال نسخة لنفسك/إيميل آخر (اختياري) -->
-        <!-- <input type="hidden" name="_cc" value="another@example.com"> -->
-        <!-- رد تلقائي للعميل (اختياري) -->
-        <!-- <input type="hidden" name="_autoresponse" value="شكرًا! استلمنا طلبك وسنعاودك قريبًا."> -->
 
         <!-- سيُملأ تلقائيًا قبل الإرسال -->
         <input type="hidden" name="orderId" id="orderIdField">
@@ -358,6 +354,10 @@
   </footer>
 
   <script>
+    // === إعدادات الويب آب (غَيّر السطرين التاليين) ===
+    const WEB_APP_URL = 'PUT_EXEC_URL_HERE'; // الصق رابط ال exec الكامل
+    const WEB_APP_TOKEN = 'Mohamad&03';      // نفس TOKEN في Apps Script
+
     // كشف ناعم
     const io = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } }); },{threshold:.08});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
@@ -385,7 +385,7 @@
       const keys=['utm_source','utm_medium','utm_campaign','utm_content','utm_term']; const obj={};
       keys.forEach(k=>{ if(p.get(k)) obj[k]=p.get(k); }); return obj; })();
 
-    // Jordan phone formatting: 07X XXX XXXX (077/078/079)
+    // Jordan phone formatting
     function formatJordanPhone(value){
       const digits=(value||'').replace(/\D/g,'').replace(/^00/, '0');
       let d=digits;
@@ -471,7 +471,7 @@
       sessionStorage.setItem('orderData', JSON.stringify(data));
     }
 
-    // تمييز الحقول المطلوبة
+    // Required fields
     function setInvalid(el, on){
       el.classList.toggle('invalid', on);
       if(on){
@@ -521,7 +521,7 @@
     document.getElementById('siteForm').addEventListener('input', saveForm);
     document.getElementById('clearForm').addEventListener('click', clearForm);
 
-    // توليد رقم الطلب مثل thankyou
+    // توليد رقم الطلب
     function generateOrderId(){
       const d = new Date();
       const y = String(d.getFullYear()).slice(-2);
@@ -532,7 +532,7 @@
       return `SH-${y}${m}${day}-${rand}`;
     }
 
-    // عند الإرسال: تحقق → جهّز البيانات → اسمح للفورم يكمل الإرسال
+    // الإرسال
     document.getElementById('siteForm').addEventListener('submit', function(e){
       if(!validateRequired()){ e.preventDefault(); return; }
 
@@ -546,7 +546,28 @@
       document.getElementById('orderIdField').value = orderId;
       document.getElementById('summaryField').value = summary;
 
-      // ملاحظة: لا نمنع الإرسال — FormSubmit سيعيد التوجيه تلقائيًا إلى thankyou.html
+      // إرسال نسخة للـ Web App (Apps Script)
+      try{
+        const payload = {
+          token: WEB_APP_TOKEN,
+          orderId,
+          status: 'received',
+          fullName: (document.getElementById('fullName')?.value||'').trim(),
+          phone: (document.getElementById('phone')?.value||'').trim(),
+          email: (document.getElementById('email')?.value||'').trim(),
+          notes: (document.getElementById('notes')?.value||'').trim()
+        };
+        const blob = new Blob([JSON.stringify(payload)], {type:'application/json'});
+        const sent = navigator.sendBeacon && navigator.sendBeacon(WEB_APP_URL, blob);
+        if(!sent){
+          fetch(WEB_APP_URL, {
+            method:'POST', mode:'cors', keepalive:true,
+            headers:{ 'Content-Type':'application/json', 'x-shlool-key': WEB_APP_TOKEN },
+            body: JSON.stringify(payload)
+          }).catch(()=>{});
+        }
+        sessionStorage.setItem(`status:${orderId}`,'received');
+      }catch(err){ console.warn('Beacon/Fetch to Web App failed:', err); }
     });
 
     // نسخ الملخص يدويًا
