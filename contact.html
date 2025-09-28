@@ -17,10 +17,13 @@
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:16px; --max:1100px;
     }
-    *{box-sizing:border-box}
+
+    /* أساسيات + منع أي تمدد أفقي */
+    *,*::before,*::after{box-sizing:border-box}
     html{scroll-behavior:smooth}
+    html,body{width:100%;margin:0;padding:0;overflow-x:hidden}
     body{
-      margin:0; font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial;
       background:
         radial-gradient(1200px 800px at 80% -100px, rgba(64,179,255,.12), transparent 60%),
         linear-gradient(180deg, #1b1b1b, var(--bg));
@@ -45,7 +48,7 @@
       display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px;
       background:linear-gradient(135deg,var(--blue),var(--blue-2)); color:#fff; font-weight:700;
       box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .2s ease; border:0; cursor:pointer;
-      text-align:center;
+      text-align:center; min-width:0; white-space:normal;
     }
     .btn:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(10,132,255,.25)}
     .btn-outline{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.16)}
@@ -54,9 +57,13 @@
 
     .wrap{max-width:var(--max); margin:auto; padding:28px 20px}
 
-    /* Hero — مثل index */
-    .hero{display:grid; grid-template-columns:1.1fr .9fr; gap:28px; align-items:center; padding-block:32px}
+    /* Hero */
+    .hero{
+      display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+      gap:28px; align-items:center; padding-block:32px;
+    }
     .hero > *{min-width:0}
+
     .title{font-size:clamp(30px, 4vw, 46px); line-height:1.2; margin:0 0 10px; font-weight:800}
     .subtitle{color:var(--muted); font-size:clamp(16px,2.3vw,18px); margin:0 0 20px}
     .badge{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
@@ -69,52 +76,54 @@
     .grid-2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
     .grid-3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px}
 
+    /* الحقول: استثنينا checkbox/radio من العرض 100% */
     label{font-weight:700; margin-bottom:6px; display:block}
-    input, select, textarea{
+    input:not([type="checkbox"]):not([type="radio"]), select, textarea{
       width:100%; min-width:0; padding:12px 12px; border-radius:12px; background:#1f1f1f;
       border:1px solid rgba(255,255,255,.08); color:var(--text); font:inherit; outline:none;
-      transition:border-color .15s ease, box-shadow .15s ease;
-      font-size:16px; /* يمنع الزووم على اللمس بالموبايل */
+      transition:border-color .15s ease, box-shadow .15s ease; font-size:16px;
     }
     input:focus, select:focus, textarea:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(10,132,255,.15)}
     .hint{color:var(--muted); font-size:13px; margin-top:6px}
 
+    /* Checkboxes داخل القوائم */
     .choices{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-    .choices label{
-      font-weight:600; display:flex; align-items:center; gap:10px; line-height:1.6;
-      padding:10px 12px; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.02);
-    }
+    .choices label{ font-weight:600; display:flex; align-items:center; gap:10px; line-height:1.6;
+      padding:10px 12px; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.02); }
     .choices input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--blue) }
+
+    /* Checkbox الموافقة — حل مشكلة المحاذاة */
+    .agree{ display:flex; align-items:center; gap:10px; margin:0 }
+    .agree input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--blue); flex:0 0 18px; }
+    .agree span{ font-weight:800 }
 
     .actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-start; margin-top:14px}
 
+    /* Estimator */
     .estimator{display:flex; align-items:center; justify-content:space-between; gap:14px}
-    .estimate-pill{
-      padding:8px 12px; border-radius:999px; background:rgba(10,132,255,.12);
-      border:1px solid rgba(64,179,255,.25); color:#fff; font-weight:800
-    }
+    .estimate-pill{padding:8px 12px; border-radius:999px; background:rgba(10,132,255,.12);
+      border:1px solid rgba(64,179,255,.25); color:#fff; font-weight:800}
     .small{color:var(--muted); font-size:13px}
 
-    footer{
-      background:var(--surface); border-top:1px solid rgba(255,255,255,.08);
-      box-shadow:0 -6px 20px rgba(0,0,0,.25); margin-top:40px;
-    }
+    /* Footer */
+    footer{ background:var(--surface); border-top:1px solid rgba(255,255,255,.08);
+      box-shadow:0 -6px 20px rgba(0,0,0,.25); margin-top:40px; }
     .footer-inner{max-width:var(--max); margin:auto; padding:22px 20px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-    .brand{opacity:.7}
-    .dev{font-weight:800}
+    .brand{opacity:.7} .dev{font-weight:800}
 
+    /* Reveal */
     .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
     .reveal.show{opacity:1; transform:none}
 
-    /* إخفاء HoneyPot بدون تمديد العرض */
+    /* HoneyPot آمن بصريًا (بدون left:-9999px) */
     #siteForm{ position:relative }
-    .hp-trap{
-      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
-      overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%);
-      border:0; white-space:nowrap; opacity:0;
+    .visually-hidden{
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);
+      border:0;white-space:nowrap;opacity:0;
     }
 
-    /* نفس breakpoint تبع index */
+    /* موبايل */
     @media (max-width:900px){
       .hero{grid-template-columns:1fr; gap:18px}
       .grid-2,.grid-3{grid-template-columns:1fr}
@@ -164,8 +173,8 @@
       <p class="hint">الحقول المعلَّمة بـ (*) مطلوبة. الإرسال يتم عبر واتساب أو بريد — بدون أي باك-إند.</p>
 
       <form id="siteForm" novalidate>
-        <!-- HoneyPot (مخفي بدون left:-9999px) -->
-        <input id="hp" class="hp-trap" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <!-- HoneyPot المخفي بشكل سليم -->
+        <input id="hp" class="visually-hidden" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
 
         <!-- معلومات أساسية -->
         <div class="grid-3">
@@ -305,18 +314,18 @@
           </div>
         </div>
 
-        <!-- ملاحظات -->
-        <div style="margin-top:16px">
-          <label for="notes">ملاحظات إضافية</label>
-          <textarea id="notes" rows="6" placeholder="اكتب أي تفاصيل إضافية ترغب بها: أقسام مطلوبة، ألوان، لغة ثانية، وغير ذلك…"></textarea>
-        </div>
-
         <!-- سياسة خصوصية -->
         <div class="actions" style="margin-top:6px">
           <label class="agree">
             <input id="agree" type="checkbox" required>
             <span>أوافق على سياسة الخصوصية واستخدام بيانات التواصل للرد على الطلب.</span>
           </label>
+        </div>
+
+        <!-- ملاحظات -->
+        <div style="margin-top:16px">
+          <label for="notes">ملاحظات إضافية</label>
+          <textarea id="notes" rows="6" placeholder="اكتب أي تفاصيل إضافية ترغب بها: أقسام مطلوبة، ألوان، لغة ثانية، وغير ذلك…"></textarea>
         </div>
 
         <!-- إرسال -->
@@ -341,12 +350,13 @@
   </footer>
 
   <script>
-    // ظهور ناعم (مثل index)
+    // Reveal
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } });
     },{threshold:.08});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
+    /* ===== منطق النموذج ===== */
     const $ = id => document.getElementById(id);
 
     function getSelectedFeatures(){
@@ -365,16 +375,14 @@
     }
     function updateEstimator(){
       const r=getRecommendation();
-      $('recName').textContent=r.plan;
-      $('recPrice').textContent=r.price;
-      $('recReason').textContent=r.reason;
+      $('recName').textContent=r.plan; $('recPrice').textContent=r.price; $('recReason').textContent=r.reason;
     }
     document.querySelectorAll('#featureChoices input, #siteType').forEach(el=> el.addEventListener('change', updateEstimator));
     updateEstimator();
 
     const utm=(()=>{ const p=new URLSearchParams(location.search);
       const keys=['utm_source','utm_medium','utm_campaign','utm_content','utm_term']; const obj={};
-      keys.forEach(k=>{ if(p.get(k)) obj[k]=p.get(k); }); return obj; })();
+      keys.forEach(k=>{ if(p.get(k)) obj[k]=p.get(k)); return obj; })();
 
     function buildSummary(){
       const name=$('fullName').value.trim();
@@ -391,28 +399,29 @@
       const stylePref=$('stylePref').value;
       const brandColor=$('brandColor').value;
       const assetsLink=$('assetsLink').value.trim();
-      const refs=[$('ref1').value.trim(), $('ref2').value.trim()].filter(Boolean);
+      const refs=[$('ref1')?.value.trim(), $('ref2')?.value.trim()].filter(Boolean);
       const rec=getRecommendation();
 
-      const lines=[];
-      lines.push('طلب موقع جديد:');
-      lines.push(`الاسم: ${name}`);
-      lines.push(`الهاتف/واتساب: ${phone}`);
-      lines.push(`البريد: ${email}`);
-      if(business) lines.push(`النشاط: ${business}`);
-      if(industry) lines.push(`القطاع: ${industry}`);
-      if(currentSite) lines.push(`موقع حالي: ${currentSite}`);
-      lines.push(`نوع الموقع: ${siteType || '-'}`);
-      if(features.length) lines.push(`ميزات مطلوبة: ${features.join('، ')}`);
-      if(stylePref) lines.push(`ستايل التصميم: ${stylePref}`);
-      if(brandColor) lines.push(`لون العلامة: ${brandColor}`);
-      if(assetsLink) lines.push(`رابط الملفات: ${assetsLink}`);
-      if(refs.length) lines.push(`مواقع مرجعية: ${refs.join(' , ')}`);
-      if(contactTime) lines.push(`وقت التواصل المفضّل: ${contactTime}`);
-      if(contactPref) lines.push(`طريقة التواصل: ${contactPref}`);
-      lines.push(`الباقة المقترحة: ${rec.plan} — سعر مبدئي: ${rec.price}`);
-      if(notes){ lines.push(''); lines.push('ملاحظات إضافية:'); lines.push(notes); }
-      if(Object.keys(utm).length){ lines.push(''); lines.push('وسوم UTM:'); lines.push(JSON.stringify(utm)); }
+      const lines=[
+        'طلب موقع جديد:',
+        `الاسم: ${name}`,
+        `الهاتف/واتساب: ${phone}`,
+        `البريد: ${email}`,
+        business?`النشاط: ${business}`:null,
+        industry?`القطاع: ${industry}`:null,
+        currentSite?`موقع حالي: ${currentSite}`:null,
+        `نوع الموقع: ${siteType || '-'}`,
+        features.length?`ميزات مطلوبة: ${features.join('، ')}`:null,
+        stylePref?`ستايل التصميم: ${stylePref}`:null,
+        brandColor?`لون العلامة: ${brandColor}`:null,
+        assetsLink?`رابط الملفات: ${assetsLink}`:null,
+        refs.length?`مواقع مرجعية: ${refs.join(' , ')}`:null,
+        contactTime?`وقت التواصل المفضّل: ${contactTime}`:null,
+        contactPref?`طريقة التواصل: ${contactPref}`:null,
+        `الباقة المقترحة: ${rec.plan} — سعر مبدئي: ${rec.price}`,
+        notes?`\nملاحظات إضافية:\n${notes}`:null,
+        (typeof utm==='object' && Object.keys(utm).length)?`\nوسوم UTM:\n${JSON.stringify(utm)}`:null
+      ].filter(Boolean);
       return lines.join('\n');
     }
 
