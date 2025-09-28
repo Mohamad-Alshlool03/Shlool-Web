@@ -65,7 +65,6 @@
     .grid-3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px}
     label{font-weight:700; margin-bottom:6px; display:block}
 
-    /* استثناء checkbox/radio من عرض 100% */
     input:not([type="checkbox"]):not([type="radio"]), select, textarea{
       width:100%; min-width:0; padding:12px 12px; border-radius:12px; background:#1f1f1f;
       border:1px solid rgba(255,255,255,.08); color:var(--text); font:inherit; outline:none;
@@ -109,11 +108,8 @@
       border:0; white-space:nowrap; opacity:0;
     }
 
-    /* الموافقة */
     .agree{ display:flex; align-items:center; gap:8px; font-weight:600 }
     .agree input[type="checkbox"]{ width:auto; height:auto; margin:0 }
-
-    /* تمييز الحقول غير الصحيحة */
     .invalid{ border-color:#ff6b6b !important; box-shadow:0 0 0 3px rgba(255,107,107,.15) }
 
     @media (max-width:900px){
@@ -122,10 +118,6 @@
       .choices{grid-template-columns:1fr}
     }
   </style>
-
-  <!-- reCAPTCHA v2 Invisible (اختياري) — فعّل السطرين تحت واستبدل YOUR_SITE_KEY -->
-  <!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
-  <!-- <meta name="recaptcha-sitekey" content="YOUR_SITE_KEY"> -->
 </head>
 <body>
   <header>
@@ -152,7 +144,6 @@
         </div>
       </div>
 
-      <!-- شلنا reveal عشان ما تختفي -->
       <div class="panel">
         <h3 style="margin:0 0 10px">ليش معنا؟</h3>
         <ul style="margin:0; padding-inline-start:18px; color:var(--muted)">
@@ -167,11 +158,30 @@
     <!-- نموذج طلب موقع -->
     <section class="panel reveal" aria-label="طلب موقع">
       <h2 style="margin-top:0">نموذج طلب موقع</h2>
-      <p class="hint" id="reqHint">الحقول المعلَّمة بـ (*) مطلوبة. الإرسال يتم عبر واتساب أو بريد — بدون أي باك-إند.</p>
+      <p class="hint" id="reqHint">الحقول المعلَّمة بـ (*) مطلوبة. **الإرسال يتم إلى بريدك أولًا** عبر FormSubmit ثم إعادة التوجيه إلى صفحة الشكر.</p>
 
-      <form id="siteForm" novalidate autocomplete="on">
-        <!-- HoneyPot -->
-        <input id="hp" class="hp-trap" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <!-- ملاحظة: عدّل بريدك في action إن رغبت -->
+      <form id="siteForm"
+            action="https://formsubmit.co/mshlool684@gmail.com"
+            method="POST"
+            novalidate autocomplete="on">
+        <!-- HoneyPot (لـ FormSubmit استخدم _honey) -->
+        <input id="hp" class="hp-trap" name="_honey" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <!-- إعدادات FormSubmit -->
+        <input type="hidden" name="_next" value="https://mohamad-alshlool03.github.io/Shlool-Web/thankyou.html">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_subject" value="طلب جديد — Shlool Web">
+        <!-- إرسال نسخة لنفسك/إيميل آخر (اختياري) -->
+        <!-- <input type="hidden" name="_cc" value="another@example.com"> -->
+        <!-- رد تلقائي للعميل (اختياري) -->
+        <!-- <input type="hidden" name="_autoresponse" value="شكرًا! استلمنا طلبك وسنعاودك قريبًا."> -->
+
+        <!-- سيُملأ تلقائيًا قبل الإرسال -->
+        <input type="hidden" name="orderId" id="orderIdField">
+        <input type="hidden" name="summary" id="summaryField">
+        <input type="hidden" name="page_url" value="https://mohamad-alshlool03.github.io/Shlool-Web/contact.html">
 
         <!-- معلومات أساسية -->
         <div class="grid-3">
@@ -234,18 +244,18 @@
         <div style="margin-top:10px">
           <label>الميزات المطلوبة (اختَر ما يلزم)</label>
           <div class="choices" id="featureChoices">
-            <label><input type="checkbox" value="منيو أونلاين وQR"> منيو أونلاين وQR</label>
-            <label><input type="checkbox" value="طلبات أونلاين بسيطة"> طلبات أونلاين بسيطة</label>
-            <label><input type="checkbox" value="حجز مواعيد إلى الإيميل"> حجز مواعيد إلى الإيميل</label>
-            <label><input type="checkbox" value="نموذج تواصل إلى الإيميل"> نموذج تواصل إلى الإيميل</label>
-            <label><input type="checkbox" value="زر واتساب مباشر"> زر واتساب مباشر</label>
-            <label><input type="checkbox" value="خرائط جوجل وموقع الفرع"> خرائط جوجل وموقع الفرع</label>
-            <label><input type="checkbox" value="تعدد اللغات"> تعدد اللغات</label>
-            <label><input type="checkbox" value="مدونة/مقالات"> مدونة/مقالات</label>
-            <label><input type="checkbox" value="معرض صور/أعمال"> معرض صور/أعمال</label>
-            <label><input type="checkbox" value="دفع أونلاين"> دفع أونلاين</label>
-            <label><input type="checkbox" value="تأمين دومين واستضافة"> تأمين دومين واستضافة</label>
-            <label><input type="checkbox" value="تحسين سرعة وSEO أساسي"> تحسين سرعة وSEO أساسي</label>
+            <label><input name="features[]" type="checkbox" value="منيو أونلاين وQR"> منيو أونلاين وQR</label>
+            <label><input name="features[]" type="checkbox" value="طلبات أونلاين بسيطة"> طلبات أونلاين بسيطة</label>
+            <label><input name="features[]" type="checkbox" value="حجز مواعيد إلى الإيميل"> حجز مواعيد إلى الإيميل</label>
+            <label><input name="features[]" type="checkbox" value="نموذج تواصل إلى الإيميل"> نموذج تواصل إلى الإيميل</label>
+            <label><input name="features[]" type="checkbox" value="زر واتساب مباشر"> زر واتساب مباشر</label>
+            <label><input name="features[]" type="checkbox" value="خرائط جوجل وموقع الفرع"> خرائط جوجل وموقع الفرع</label>
+            <label><input name="features[]" type="checkbox" value="تعدد اللغات"> تعدد اللغات</label>
+            <label><input name="features[]" type="checkbox" value="مدونة/مقالات"> مدونة/مقالات</label>
+            <label><input name="features[]" type="checkbox" value="معرض صور/أعمال"> معرض صور/أعمال</label>
+            <label><input name="features[]" type="checkbox" value="دفع أونلاين"> دفع أونلاين</label>
+            <label><input name="features[]" type="checkbox" value="تأمين دومين واستضافة"> تأمين دومين واستضافة</label>
+            <label><input name="features[]" type="checkbox" value="تحسين سرعة وSEO أساسي"> تحسين سرعة وSEO أساسي</label>
           </div>
         </div>
 
@@ -315,7 +325,7 @@
         <!-- ملاحظات -->
         <div style="margin-top:16px">
           <label for="notes">ملاحظات إضافية</label>
-          <textarea id="notes" name="notes" rows="6" placeholder="اكتب أي تفاصيل إضافية ترغب بها: أقسام مطلوبة، ألوان، لغة ثانية، وغير ذلك…" dir="auto"></textarea>
+          <textarea id="notes" name="notes" rows="6" placeholder="اكتب أي تفاصيل إضافية ترغب بها…" dir="auto"></textarea>
         </div>
 
         <!-- سياسة خصوصية -->
@@ -328,8 +338,7 @@
 
         <!-- إرسال -->
         <div class="actions">
-          <button type="submit" class="btn btn-whatsapp"><span>إرسال عبر واتساب</span></button>
-          <button type="button" id="sendEmail" class="btn btn-outline">إرسال عبر الإيميل</button>
+          <button type="submit" class="btn"><span>إرسال الطلب</span></button>
           <button type="button" id="copySummary" class="btn btn-outline">نسخ الطلب</button>
           <button type="button" id="clearForm" class="btn btn-outline" title="مسح الحقول">تنظيف</button>
           <a class="btn btn-outline" href="index.html">رجوع للرئيسية</a>
@@ -349,12 +358,9 @@
   </footer>
 
   <script>
-    // ظهور ناعم
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } });
-    },{threshold:.08});
+    // كشف ناعم
+    const io = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } }); },{threshold:.08});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-
     const $ = id => document.getElementById(id);
 
     // ميزات + توصية
@@ -370,10 +376,7 @@
       }
       return {plan, price, reason};
     }
-    function updateEstimator(){
-      const r=getRecommendation();
-      $('recName').textContent=r.plan; $('recPrice').textContent=r.price; $('recReason').textContent=r.reason;
-    }
+    function updateEstimator(){ const r=getRecommendation(); $('recName').textContent=r.plan; $('recPrice').textContent=r.price; $('recReason').textContent=r.reason; }
     document.querySelectorAll('#featureChoices input, #siteType').forEach(el=> el.addEventListener('change', updateEstimator));
     updateEstimator();
 
@@ -399,18 +402,11 @@
       return /^07(7|8|9)\d{7}$/.test(d);
     }
     const phoneInput=$('phone');
-    phoneInput.addEventListener('input', ()=>{
-      const pos=phoneInput.selectionStart;
-      const beforeLen=phoneInput.value.length;
-      phoneInput.value=formatJordanPhone(phoneInput.value);
-      const afterLen=phoneInput.value.length;
-      const delta=afterLen-beforeLen;
-      phoneInput.setSelectionRange(Math.max(0,(pos+delta)), Math.max(0,(pos+delta)));
-    });
+    phoneInput.addEventListener('input', ()=>{ const pos=phoneInput.selectionStart; const beforeLen=phoneInput.value.length; phoneInput.value=formatJordanPhone(phoneInput.value); const afterLen=phoneInput.value.length; const delta=afterLen-beforeLen; phoneInput.setSelectionRange(Math.max(0,(pos+delta)), Math.max(0,(pos+delta))); });
     phoneInput.addEventListener('blur', ()=>{ phoneInput.value=formatJordanPhone(phoneInput.value); });
 
     // ملخص
-    function buildSummary(){
+    function buildSummary(orderId){
       const name=$('fullName').value.trim();
       const phone=$('phone').value.trim();
       const email=$('email').value.trim();
@@ -429,6 +425,7 @@
       const rec=getRecommendation();
 
       const lines=[];
+      lines.push(`رقم الطلب: ${orderId}`);
       lines.push('طلب موقع جديد:');
       lines.push(`الاسم: ${name}`);
       lines.push(`الهاتف/واتساب: ${phone}`);
@@ -450,9 +447,7 @@
       return lines.join('\n');
     }
 
-    // تمرير البيانات لصفحة الشكر
-    function saveSummaryForThankYou(){
-      const summary = buildSummary();
+    function saveSummaryForThankYou(orderId, summary){
       const data = {
         fullName: ($('fullName')?.value||'').trim(),
         phone: ($('phone')?.value||'').trim(),
@@ -471,6 +466,7 @@
         contactPref: ($('contactPref')?.value||''),
         notes: ($('notes')?.value||'').trim()
       };
+      sessionStorage.setItem('orderId', orderId);
       sessionStorage.setItem('orderSummary', summary);
       sessionStorage.setItem('orderData', JSON.stringify(data));
     }
@@ -525,46 +521,38 @@
     document.getElementById('siteForm').addEventListener('input', saveForm);
     document.getElementById('clearForm').addEventListener('click', clearForm);
 
-    // reCAPTCHA helper (اختياري)
-    async function getRecaptchaToken(action='contact'){
-      const meta=document.querySelector('meta[name="recaptcha-sitekey"]');
-      const sitekey=meta && meta.content;
-      if(!(window.grecaptcha && sitekey)) return null;
-      try{
-        await grecaptcha.ready();
-        const token=await grecaptcha.execute(sitekey,{action});
-        return token;
-      }catch{ return null; }
+    // توليد رقم الطلب مثل thankyou
+    function generateOrderId(){
+      const d = new Date();
+      const y = String(d.getFullYear()).slice(-2);
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      const bytes = new Uint8Array(3); crypto.getRandomValues(bytes);
+      const rand = Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase().slice(0,5);
+      return `SH-${y}${m}${day}-${rand}`;
     }
 
-    // إرسال واتساب + تحويل لشكرًا
-    document.getElementById('siteForm').addEventListener('submit', async function(e){
-      e.preventDefault();
-      if(!validateRequired()) return;
-      const token=await getRecaptchaToken('whatsapp');
-      const text=encodeURIComponent(buildSummary() + (token? `\n\nreCAPTCHA:${token}`:'' ));
-      window.open(`https://wa.me/962790986908?text=${text}`,'_blank');
-      saveSummaryForThankYou();
-      setTimeout(()=>{ window.location.href='thankyou.html'; }, 400);
+    // عند الإرسال: تحقق → جهّز البيانات → اسمح للفورم يكمل الإرسال
+    document.getElementById('siteForm').addEventListener('submit', function(e){
+      if(!validateRequired()){ e.preventDefault(); return; }
+
+      const orderId = generateOrderId();
+      const summary = buildSummary(orderId);
+
+      // خزّن للـ thankyou
+      saveSummaryForThankYou(orderId, summary);
+
+      // مرّر لـ FormSubmit
+      document.getElementById('orderIdField').value = orderId;
+      document.getElementById('summaryField').value = summary;
+
+      // ملاحظة: لا نمنع الإرسال — FormSubmit سيعيد التوجيه تلقائيًا إلى thankyou.html
     });
 
-    // إرسال عبر الإيميل
-    document.getElementById('sendEmail').addEventListener('click', async function(){
-      if(!validateRequired()) return;
-      const token=await getRecaptchaToken('email');
-      const body=encodeURIComponent(buildSummary() + (token? `\n\nreCAPTCHA:${token}`:'' ));
-      const subject=encodeURIComponent('طلب موقع جديد — Shlool Web');
-      const a=document.createElement('a');
-      a.href=`mailto:mshlool684@gmail.com?subject=${subject}&body=${body}`;
-      a.style.display='none'; document.body.appendChild(a); a.click(); a.remove();
-      saveSummaryForThankYou();
-      setTimeout(()=>{ window.location.href='thankyou.html'; }, 400);
-    });
-
-    // نسخ الملخص
+    // نسخ الملخص يدويًا
     document.getElementById('copySummary').addEventListener('click', async function(){
-      const txt=buildSummary();
-      try{ await navigator.clipboard.writeText(txt); alert('تم نسخ الطلب إلى الحافظة ✅'); }
+      const tmp = buildSummary('—');
+      try{ await navigator.clipboard.writeText(tmp); alert('تم نسخ الطلب إلى الحافظة ✅'); }
       catch{ alert('لم نتمكّن من النسخ تلقائيًا. انسخ يدويًا بعد تحديد النص.'); }
     });
   </script>
